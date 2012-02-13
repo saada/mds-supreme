@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="C:/Users/lyang/Documents/MDS/Mysql/mysql-connector-java-5.1.18/mysql-connector-java-5.1.18/mysql-connector-java-5.1.18-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/lyang/Documents/softwareToolkit/smack_3_2_1/smack_3_2_1/smack.jar"/>
+	<classpathentry kind="lib" path="C:/Users/lyang/Documents/softwareToolkit/smack_3_2_1/smack_3_2_1/smackx.jar"/>
+	<classpathentry kind="lib" path="C:/Users/lyang/Documents/softwareToolkit/smack_3_2_1/smack_3_2_1/smackx-debug.jar"/>
+	<classpathentry kind="lib" path="C:/Users/lyang/Documents/softwareToolkit/smack_3_2_1/smack_3_2_1/smackx-jingle.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
