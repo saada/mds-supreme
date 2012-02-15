@@ -3,6 +3,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+
 public class TreeGenerator {
 	
 	public void generate(ResultSet set) throws SQLException
@@ -35,36 +36,41 @@ public class TreeGenerator {
 			}
 			else
 			{
-				if(e_type.equals("dir"))
+				if(e_url.startsWith(prevUrl) && (level(e_url) == (level(prevUrl)+1)))
 				{
-					if(e_url.length() > prevUrl.length() && e_url.startsWith(prevUrl))
+					root.add(node);
+					if(e_type.equals("dir"))
 					{
-						root.add(node);
 						root = (DefaultMutableTreeNode) root.getLastChild();
 						prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
 					}
-					else
-					{
-						while(!root.isRoot() && !e_url.startsWith(prevUrl))
-						{
-							root = (DefaultMutableTreeNode) root.getParent();
-						}
-						if(!root.isRoot())
-							prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
-						
-						root.add(node);
-					}
 				}
-				else //if (e_type == "file")
+				else
 				{
-					if(e_url.length() > prevUrl.length() && e_url.startsWith(prevUrl))
+					while(!(e_url.startsWith(prevUrl) && (level(e_url) == (level(prevUrl)+1))))
 					{
-						root.add(node);
+						root = (DefaultMutableTreeNode) root.getParent();
+						prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
 					}
+					root.add(node);
 				}
 			}
 		}
+		while(!root.isRoot())
+		{
+			root = (DefaultMutableTreeNode) root.getParent();
+		}
 		printTree(root);
+	}
+	private int level(String url) {
+		int counter = 0;
+		for(int i=0; i<url.length(); i++)
+		{
+			if(url.charAt(i) == '/')
+					counter++;
+		}
+		System.out.println("Level = "+counter);
+		return counter;
 	}
 	public void printTree(DefaultMutableTreeNode root)
 	{
