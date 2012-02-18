@@ -36,8 +36,8 @@ public class Main {
 		
 		//generate java tree directory from database entities
 		myTree.generate(dao.selectAll(table));
-		
-		dao.close();
+		String treeString = toString(myTree.root);
+		System.out.println(treeString);
 	/*	END OF DATABASE INIALIZATION  */
 		
 	/*###################################################
@@ -72,7 +72,10 @@ public class Main {
 
 		System.out.println("-----");
 		System.out.println("Do you want to send file list in your VM to that guy? YES or NO");
-		System.out.println("-----\n");	
+		System.out.println("-----\n");
+		
+		//send tree
+		c.sendMessage(treeString, "xin@mobicloud-mds-mysqlserver");
 		
 
 		while ((yesorno = br.readLine()).equalsIgnoreCase("YES")) {
@@ -81,7 +84,30 @@ public class Main {
 		
 		//c.sendMessage("Request Rejected", talkTo);
 
+		//end program and database and xmpp connections
+		dao.close();
 		c.disconnect();
 		System.exit(0);
 	}
+	
+	 /** Read the object from Base64 string. */
+    private static Object fromString( String s ) throws IOException ,
+                                                        ClassNotFoundException {
+        byte [] data = Base64Coder.decode( s );
+        ObjectInputStream ois = new ObjectInputStream( 
+                                        new ByteArrayInputStream(  data ) );
+        Object o  = ois.readObject();
+        ois.close();
+        return o;
+    }
+
+    /** Write the object to a Base64 string. */
+    private static String toString( Serializable o ) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        oos.writeObject( o );
+        oos.close();
+        return new String( Base64Coder.encode( baos.toByteArray() ) );
+    }
+
 }

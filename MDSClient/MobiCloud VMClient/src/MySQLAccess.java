@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.Date;
 
 public class MySQLAccess {
@@ -166,7 +167,18 @@ public class MySQLAccess {
 			System.out.println("**************************");
 		}
 	}
-
+	
+	//Access Control
+	public void addAllUsers(Collection<String> users)
+	{
+//		preparedStatement = connect
+//				.prepareStatement("insert into  mds_db.T_Entity values (default, ?, ?, ?, ?, ?)");
+//		for(int i=0; i<users.size(); i++)
+//		{
+//			preparedStatement.executeUpdate();
+//		}
+	}
+	
 	// You need to close the resultSet
 	public void close() {
 		try {

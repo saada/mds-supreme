@@ -25,6 +25,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 	public class JabberAPI implements MessageListener {
 		XMPPConnection connection;
+		Collection<RosterEntry> entries;
 		private FileTransferManager manager;
 
 		public void setConnection(XMPPConnection connection) {
@@ -40,7 +41,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 		public void login(String userName, String password) throws XMPPException {
 			ConnectionConfiguration config = new ConnectionConfiguration(
-					"openfire.mobicloud.asu.edu",
+					"10.5.18.104",
 					5222);
 			connection = new XMPPConnection(config);
 
@@ -82,7 +83,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		public void displayBuddyList() {
 			Roster roster = connection.getRoster();
 	                roster.getEntry("colin");
-			Collection<RosterEntry> entries = roster.getEntries();
+			entries = roster.getEntries();
 
 			System.out.println("\n\n" + entries.size() + " buddy(ies):");
 	                System.out.println("\n" + roster.getEntry("colin"));
@@ -97,37 +98,20 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 		public void processMessage(Chat chat, Message message) {
 			if (message.getType() == Message.Type.chat)
+			{
 				System.out.println(chat.getParticipant() + " says: "
 						+ message.getBody());
+			}
 		}
 		
-//		public void incomingFile() {
-//			// Create the file transfer manager
-//		      final FileTransferManager manager = new FileTransferManager(connection);
-//
-//		      // Create the listener
-//		      manager.addFileTransferListener( new FileTransferListener() {
-//		            public void fileTransferRequest(FileTransferRequest request) {
-//		                  // Check to see if the request should be accepted
-//		                  if(shouldAccept(request)) {
-//		                        // Accept it
-//		                        IncomingFileTransfer transfer = request.accept();
-//		                        try {
-//									transfer.recieveFile(new File("shakespeare_complete_works.txt"));
-//								} catch (XMPPException e) {
-//									// TODO Auto-generated catch block
-//									e.printStackTrace();
-//								}
-//		                  } else {
-//		                        // Reject it
-//		                        request.reject();
-//		                  }
-//		            }
-//
-//					private boolean shouldAccept(FileTransferRequest request) {
-//						// TODO Auto-generated method stub
-//						return true;
-//					}
-//		      });
-//		}
+		public Collection<RosterEntry> getBuddyList()
+		{
+			return entries;
+		}
+		
+		//OUR PROTOCOL MESSAGING FUNCTION
+		public String createGetDirectoryMessage(String serializedFile, String jid)
+		{
+			return "<MSG><responses><view jid="+jid+">"+serializedFile+"</view></responses></MSG>";
+		}
 	}
