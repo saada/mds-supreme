@@ -110,8 +110,67 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		}
 		
 		//OUR PROTOCOL MESSAGING FUNCTION
-		public String createGetDirectoryMessage(String serializedFile, String jid)
+		
+		//<view>
+		public String createRequestDirectoryMessage(String jid)
 		{
-			return "<MSG><responses><view jid="+jid+">"+serializedFile+"</view></responses></MSG>";
+			return "<MSG><requests><view jid="+jid+"></view></requests></MSG>";
 		}
+		public String createResponseDirectoryMessage(String serializedFile, String jid)
+		{
+			return "<MSG><responses><view jid="+jid+"><![CDATA["+serializedFile+"]]></view></responses></MSG>";
+		}
+		//</view>
+		//<download>
+		public String createRequestDownload(String jid, int entityId)
+		{
+			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
+		}
+		public String createResponeDownload(String jid)
+		{
+			return "<MSG><responses><download jid="+jid+">FILE WILL BE DOWNLOADED IN A MOMENT</download></responses></MSG>";
+		}
+		//</download>
+		//<delete>
+		public String createRequestDelete(String jid, int entityId)
+		{
+			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
+		}
+		public String createResponeDelete(String jid)
+		{
+			return "<MSG><responses><download jid="+jid+">FILE DELETED SUCCESSFULLY</download></responses></MSG>";
+		}
+		//</delete>
+		//<modify>
+		public String createRequestModifyEntityName(int entityId, String newname)
+		{
+			return "<MSG><requests><modify<entityname e_id="+entityId+">"+ newname +"</entityname></modify></requests></MSG>";
+		}
+		public String createRequestModifyEntityLocation(int entityId, String newpath)
+		{
+			return "<MSG><requests><modify<entitylocation e_id="+entityId+">"+ newpath +"</entitylocation></modify></requests></MSG>";
+		}
+		public String createRequestModifyUserPermission(int entityId, String jid, int permission)
+		{
+			return "<MSG><requests><modify<user_permission e_id="+entityId+" jid="+jid+">"+ permission +"</user_permission></modify></requests></MSG>";
+		}
+		public String createRequestModifyGroupPermission(int entityId, String gid, int permission)
+		{
+			return "<MSG><requests><modify<group_permission e_id="+entityId+" gid="+gid+">"+ permission +"</group_permission></modify></requests></MSG>";
+		}
+		public String createResponseModify()
+		{
+			return "<MSG><responses><modify>MODIFICATION SUCCESSFUL</modify></responses></MSG>";
+		}
+		//</modify>
+		//<createDir>
+		public String createRequestCreateDir(String name, String url)
+		{
+			return "<MSG><requests><createDir url="+url+">"+name+"</createDir></requests></MSG>";
+		}
+		public String createResponseCreateDir(String name, String url)
+		{
+			return "<MSG><responses><createDir>DIRECTORY CREATED SUCCESSFULLY</createDir></responses></MSG>";
+		}
+		//</createDir>
 	}
