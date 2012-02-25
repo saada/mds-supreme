@@ -19,7 +19,7 @@ public class DatabaseStarter {
 		GetFilePath filePath;
 		try {
 			filePath = new GetFilePath();
-			File dir = new File("/home/saada/Desktop/FilePathTest");
+			File dir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
 			filePath.visitAllDirsAndFiles(dir);
 			//pass recordslist to a local arraylist
 			ArrayList<String> recordsList = new ArrayList<String>();

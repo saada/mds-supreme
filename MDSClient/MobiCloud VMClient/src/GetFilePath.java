@@ -31,7 +31,7 @@ public class GetFilePath {
 	private JTree tree;
 	
 	public GetFilePath() throws IOException {
-		fostream = new FileOutputStream("/home/saada/Desktop/format.txt");
+		fostream = new FileOutputStream(System.getProperty("user.home")+"/Desktop/format.txt");
 		out = new DataOutputStream(fostream);
 		writer = new BufferedWriter(new OutputStreamWriter(out));
 		recordsList = new ArrayList<String>();
@@ -43,7 +43,7 @@ public class GetFilePath {
 	}
 	
 
-	static File docFile = new File("/home/saada/Desktop/file.xml");
+	static File docFile = new File(System.getProperty("user.home")+"/Desktop/file.xml");
 	static FileOutputStream outStream; 
 	//static Buff
 	static String xmlString = "";
@@ -148,7 +148,7 @@ public class GetFilePath {
 	        for (int i=0; i<children.length; i++) {
 	            visitAllDirsAndFiles(new File(dir, children[i]));
 	        }
-	        BufferedWriter out = new BufferedWriter(new FileWriter("/home/saada/Desktop/test.xml"));
+	        BufferedWriter out = new BufferedWriter(new FileWriter(System.getProperty("user.home")+"/Desktop/test.xml"));
 			out.write(xmlString);
 			out.close();
 	    }

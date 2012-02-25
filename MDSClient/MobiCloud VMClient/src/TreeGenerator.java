@@ -15,7 +15,7 @@ public class TreeGenerator {
 	{
 		//create mutable tree nodes
 		Date today = Calendar.getInstance().getTime();
-		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,"/home/saada/Desktop/",today,"public"));
+		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,"public"));
 		Node node;
 		String prevUrl = "";
 		Entity entity;
