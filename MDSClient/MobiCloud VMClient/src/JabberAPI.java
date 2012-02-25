@@ -6,6 +6,10 @@
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Collection;
 
 import org.jivesoftware.smack.Chat;
@@ -13,6 +17,7 @@ import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
+import org.jivesoftware.smack.RosterGroup;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.Message;
@@ -25,8 +30,9 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 	public class JabberAPI implements MessageListener {
 		XMPPConnection connection;
-		Collection<RosterEntry> entries;
-		private FileTransferManager manager;
+		FileTransferManager manager;
+		OutputStream out;
+		FileInputStream in;
 
 		public void setConnection(XMPPConnection connection) {
 			this.connection = connection;
@@ -36,39 +42,96 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		public JabberAPI() {
 			// turn on the enhanced debugger
 			XMPPConnection.DEBUG_ENABLED = true;
-
 		}
 
-		public void login(String userName, String password) throws XMPPException {
+		public void login(String userName, String password, String resource) throws XMPPException {
 			ConnectionConfiguration config = new ConnectionConfiguration(
 					"10.5.18.104",
 					5222);
 			connection = new XMPPConnection(config);
 
 			connection.connect();
-			connection.login(userName, password);
+			connection.login(userName, password, resource);
+			/**********************
+			 * Receiving Files
+			 */
+			// Create the file transfer manager
+		      final FileTransferManager manager = new FileTransferManager(connection);
+
+		      // Create the listener
+		      manager.addFileTransferListener(new FileTransferListener() {
+		            public void fileTransferRequest(FileTransferRequest request) {
+		                  // Check to see if the request should be accepted
+		            	System.out.println("FileTransferListener starts!");
+		                  if(shouldAccept(request)) {
+		                        // Accept it
+		                        IncomingFileTransfer transfer = request.accept();
+		                        try {
+									transfer.recieveFile(new File("C:\\test\\mds\\receive\\test_txt.txt"));
+								} catch (XMPPException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+		                  } else {
+		                        // Reject it
+		                        request.reject();
+		                  }
+		                  System.out.println("FileTransferListener ends!");
+		            }
+		      });
+		      
+		      /**************end of receiving files******************/
 		}
 
-		public void fileTransfer(String fileName, String destination)
-				throws XMPPException {
+		public void fileTransfer(String file, String destination) throws XMPPException, IOException {	    	 
+	    	try {
 
-			// Create the file transfer manager
-			// FileTransferManager manager = new FileTransferManager(connection);
-			FileTransferNegotiator.setServiceEnabled(connection, true);
-			// Create the outgoing file transfer
-			OutgoingFileTransfer transfer = manager
-					.createOutgoingFileTransfer(destination);
+                // Sets debug enabled true
+                XMPPConnection.DEBUG_ENABLED=true;
+                 
+                // Creates the file transfer manager
+                FileTransferManager manager = new FileTransferManager(connection);
+                 
+                // Create the outgoing file transfer with qualifier (i.e / clientname)
+                OutgoingFileTransfer transfer = manager.createOutgoingFileTransfer(destination);
+                                                                            // Opens a file selection dialog
+                  
+                File sf = new File(file);                 
+                long fileSize = sf.length();
+                
+                if (file != null) {
+                    try {
+                        // output is an OutputStream declared as a global variable.
+                        /* Note that transfer.sendFile(fileName, fileSize, description);
+                        returns an OutputStream */
+                    	out =  (OutputStream) transfer.sendFile
+                                (file, fileSize, "");
+                        //This is an InputStream declared as a global variable.
+                    	in = new FileInputStream(sf);
+                        
+                        int i;                          
+                            while((i = in.read())!= -1){                                   
+                                out.write((byte)i);
+                            }                                                                                
+                    	} catch (FileNotFoundException e1) {
+                            // TODO Auto-generated catch block
+                            e1.printStackTrace();
+                        }   
+                        //Close the streams when finished
+                        in.close();
+                        out.close();                                                                                
+                }
+            } catch (XMPPException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
 
-			// Send the file
-			transfer.sendFile(new File(fileName), "You won't believe this!");
-			try {
-				Thread.sleep(10000);
-			} catch (Exception e) {
-			}
-			System.out.println("Status :: " + transfer.getStatus() + " Error :: "
-					+ transfer.getError() + " Exception :: "
-					+ transfer.getException());
-			System.out.println("Is it done? " + transfer.isDone());
+            }
+		}
+
+
+		protected boolean shouldAccept(FileTransferRequest request) {
+			// TODO Auto-generated method stub
+			return true;
 		}
 
 		public void sendMessage(String message, String to) {
@@ -83,13 +146,27 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		public void displayBuddyList() {
 			Roster roster = connection.getRoster();
 	                roster.getEntry("colin");
-			entries = roster.getEntries();
+			Collection<RosterEntry> entries = roster.getEntries();
 
 			System.out.println("\n\n" + entries.size() + " buddy(ies):");
 	                System.out.println("\n" + roster.getEntry("colin"));
 			for (RosterEntry r : entries) {
 				System.out.println(r.getName());
 			}
+		}
+		
+		public Collection<RosterEntry> getMyRoster() {
+			Roster roster = connection.getRoster();
+            Collection<RosterEntry> entries = roster.getEntries();
+            
+            return entries;
+		}
+		
+		public Collection<RosterGroup> getMyGroup() {
+			Roster roster = connection.getRoster();
+            Collection<RosterGroup> entries = roster.getGroups();
+            
+            return entries;
 		}
 
 		public void disconnect() {
@@ -98,79 +175,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 		public void processMessage(Chat chat, Message message) {
 			if (message.getType() == Message.Type.chat)
-			{
 				System.out.println(chat.getParticipant() + " says: "
 						+ message.getBody());
-			}
 		}
-		
-		public Collection<RosterEntry> getBuddyList()
-		{
-			return entries;
-		}
-		
-		//OUR PROTOCOL MESSAGING FUNCTION
-		
-		//<view>
-		public String createRequestDirectoryMessage(String jid)
-		{
-			return "<MSG><requests><view jid="+jid+"></view></requests></MSG>";
-		}
-		public String createResponseDirectoryMessage(String serializedFile, String jid)
-		{
-			return "<MSG><responses><view jid="+jid+"><![CDATA["+serializedFile+"]]></view></responses></MSG>";
-		}
-		//</view>
-		//<download>
-		public String createRequestDownload(String jid, int entityId)
-		{
-			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
-		}
-		public String createResponeDownload(String jid)
-		{
-			return "<MSG><responses><download jid="+jid+">FILE WILL BE DOWNLOADED IN A MOMENT</download></responses></MSG>";
-		}
-		//</download>
-		//<delete>
-		public String createRequestDelete(String jid, int entityId)
-		{
-			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
-		}
-		public String createResponeDelete(String jid)
-		{
-			return "<MSG><responses><download jid="+jid+">FILE DELETED SUCCESSFULLY</download></responses></MSG>";
-		}
-		//</delete>
-		//<modify>
-		public String createRequestModifyEntityName(int entityId, String newname)
-		{
-			return "<MSG><requests><modify<entityname e_id="+entityId+">"+ newname +"</entityname></modify></requests></MSG>";
-		}
-		public String createRequestModifyEntityLocation(int entityId, String newpath)
-		{
-			return "<MSG><requests><modify<entitylocation e_id="+entityId+">"+ newpath +"</entitylocation></modify></requests></MSG>";
-		}
-		public String createRequestModifyUserPermission(int entityId, String jid, int permission)
-		{
-			return "<MSG><requests><modify<user_permission e_id="+entityId+" jid="+jid+">"+ permission +"</user_permission></modify></requests></MSG>";
-		}
-		public String createRequestModifyGroupPermission(int entityId, String gid, int permission)
-		{
-			return "<MSG><requests><modify<group_permission e_id="+entityId+" gid="+gid+">"+ permission +"</group_permission></modify></requests></MSG>";
-		}
-		public String createResponseModify()
-		{
-			return "<MSG><responses><modify>MODIFICATION SUCCESSFUL</modify></responses></MSG>";
-		}
-		//</modify>
-		//<createDir>
-		public String createRequestCreateDir(String name, String url)
-		{
-			return "<MSG><requests><createDir url="+url+">"+name+"</createDir></requests></MSG>";
-		}
-		public String createResponseCreateDir(String name, String url)
-		{
-			return "<MSG><responses><createDir>DIRECTORY CREATED SUCCESSFULLY</createDir></responses></MSG>";
-		}
-		//</createDir>
 	}
