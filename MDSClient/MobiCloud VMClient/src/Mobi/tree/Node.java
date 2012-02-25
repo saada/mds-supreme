@@ -1,3 +1,5 @@
+package Mobi.tree;
+
 
 
 import java.io.Serializable;
@@ -5,14 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import Mobi.xmpp.Group;
+import Mobi.xmpp.User;
 
 
+
+@SuppressWarnings("serial")
 public class Node implements Serializable{
-	public Node parent;//���ڵ�
-    public List<Node> children = new ArrayList<Node>();//�ӽڵ�    
+	public Node parent;
+    public List<Node> children = new ArrayList<Node>();
 	public Object ob;
-    public int icon = -1;//�Ƿ���ʾСͼ��,-1��ʾ����ͼ��
-    public boolean isExpanded = false;//�Ƿ���չ��״̬
+    public int icon = -1;
+    public boolean isExpanded = false;
     public boolean isSelect = false;   
     
     
@@ -25,26 +31,16 @@ public class Node implements Serializable{
 		this.isSelect = isSelect;
 	}
 
-	/**
-     * Node���캯��
-     * @param text �ڵ���ʾ������
-     * @param value �ڵ��ֵ
-     */
+	
     public Node(Object ob){
     	this.ob= ob;    	
     }
     
-    /**
-     * ���ø��ڵ�
-     * @param node
-     */
+    
     public void setParent(Node node){
     	this.parent = node;
     }
-    /**
-     * ��ø��ڵ�
-     * @return
-     */
+    
     public Node getParent(){
     	return this.parent;
     }    
@@ -57,31 +53,19 @@ public class Node implements Serializable{
 		this.ob = ob;
 	}
 
-	/**
-     * ���ýڵ�ͼ���ļ�
-     * @param icon
-     */
+	
     public void setIcon(int icon){
     	this.icon = icon;
     }
-    /**
-     * ���ͼ���ļ�
-     * @return
-     */
+    
     public int getIcon(){
     	return icon;
     }
-    /**
-     * �Ƿ��ڵ�
-     * @return
-     */
+    
     public boolean isRoot(){
     	return parent==null?true:false;
     }
-    /**
-     * ����ӽڵ�
-     * @return
-     */
+    
     
     public Object getUserObject() {
         return ob;
@@ -218,10 +202,7 @@ public class Node implements Serializable{
     public void setChildren(List<Node> children) {
 		this.children = children;
 	}
-    /**
-     * ����ӽڵ�
-     * @param node
-     */
+    
     public void add(Node node){
     	if(node != null ){
     		node.setParent(this);
@@ -242,71 +223,48 @@ public class Node implements Serializable{
         }
 	}
 
-	/**
-     * ��������ӽڵ�
-     */
+	
     public void clear(){
     	children.clear();
     }
-    /**
-     * ɾ��һ���ӽڵ�
-     * @param node
-     */
+    
     public void remove(Node node){
     	if(children.contains(node)){
     		children.remove(node);
     	}
     }
-    /**
-     * ɾ��ָ��λ�õ��ӽڵ�
-     * @param location
-     */
+    
     public void remove(int location){
     	if(location<children.size() && location>=0)
     		children.remove(location);
     }
-    /**
-     * ��ýڵ�ļ���,��ڵ�Ϊ0
-     * @return
-     */
+   
     public int getLevel(){
     	return parent==null?0:parent.getLevel()+1;
     }
-    /**
-     * �Ƿ�Ҷ�ڵ�,��û���ӽڵ�Ľڵ�
-     * @return
-     */
+   
     public boolean isLeaf(){
     	return children.size()<1?true:false;
     }
-    /**
-    * ��ǰ�ڵ��Ƿ���չ��״̬ 
-    * @return
-    */
+   
     public boolean isExpanded(){
         return isExpanded;
     }
-    /**
-     * ���ýڵ�չ��״̬
-     * @return
-     */
+   
     public void setExpanded(boolean isExpanded){
     	 this.isExpanded =  isExpanded;
     }
 
-//	public String getTag(int i) {
-//		Class<? extends Object> t = getChildren().get(i).getOb().getClass();
-//		Object item = getChildren().get(i).getOb();
-//		if(t.equals(Group.class)){
-//			return ((Group)(item)).getGroupName();
-//		}
-//		if(t.equals(User.class)){
-//			return ((User)(item)).getDispName();
-//		}
-//		if(t.equals(VMFile.class)){
-//			return ((VMFile)(item)).getFileName();
-//		}
-//		return "";
-//	}
+	public String getTag(int i) {
+		Class<? extends Object> t = getChildren().get(i).getOb().getClass();
+		Object item = getChildren().get(i).getOb();
+		if(t.equals(Group.class)){
+			return ((Group)(item)).getGroupName();
+		}
+		if(t.equals(User.class)){
+			return ((User)(item)).getDispName();
+		}		
+		return "";
+	}
  
 }

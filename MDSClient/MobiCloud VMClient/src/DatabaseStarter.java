@@ -66,7 +66,6 @@ public class DatabaseStarter {
 			System.out.println(treeString);
 			return treeString;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return "FAIL";
 		}

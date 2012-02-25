@@ -1,16 +1,22 @@
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import Mobi.xmpp.Entity;
+import Mobi.tree.Node;
+
 
 public class TreeGenerator {
+	Node root;
 	
 	public void generate(ResultSet set) throws SQLException
 	{
 		//create mutable tree nodes
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode("ROOT");
-		DefaultMutableTreeNode node;
+		Date today = Calendar.getInstance().getTime();
+		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,"/home/saada/Desktop/",today,"public"));
+		Node node;
 		String prevUrl = "";
 		Entity entity;
 		
@@ -23,15 +29,15 @@ public class TreeGenerator {
 			Date e_modate = set.getDate("e_modate");
 			
 			//store current set in an Entity data structure instance and add to tree
-			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate);
-			node = new DefaultMutableTreeNode(entity);
+			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, "public");
+			node = new Node(entity);
 			if(root.isRoot())
 			{
 				root.add(node);
 				if(e_type.equals("dir"))
 				{
-					root = (DefaultMutableTreeNode) root.getLastChild();
-					prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
+					root = (Node) root.getLastChildren();
+					prevUrl = ((Entity)((Node) root).getUserObject()).e_url;
 				}
 			}
 			else
@@ -41,24 +47,30 @@ public class TreeGenerator {
 					root.add(node);
 					if(e_type.equals("dir"))
 					{
-						root = (DefaultMutableTreeNode) root.getLastChild();
-						prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
+						root = (Node) root.getLastChildren();
+						prevUrl = ((Entity)((Node) root).getUserObject()).e_url;
 					}
 				}
 				else
 				{
 					while(!(e_url.startsWith(prevUrl) && (level(e_url) == (level(prevUrl)+1))))
 					{
-						root = (DefaultMutableTreeNode) root.getParent();
-						prevUrl = ((Entity)((DefaultMutableTreeNode) root).getUserObject()).e_url;
+						root = (Node) root.getParent();
+						prevUrl = ((Entity)((Node) root).getUserObject()).e_url;
 					}
 					root.add(node);
+					if(e_type.equals("dir"))
+					{
+						root = (Node) root.getLastChildren();
+						prevUrl = ((Entity)((Node) root).getUserObject()).e_url;
+					}
 				}
 			}
+			printTree(root);
 		}
 		while(!root.isRoot())
 		{
-			root = (DefaultMutableTreeNode) root.getParent();
+			root = (Node) root.getParent();
 		}
 		printTree(root);
 	}
@@ -72,7 +84,7 @@ public class TreeGenerator {
 		System.out.println("Level = "+counter);
 		return counter;
 	}
-	public void printTree(DefaultMutableTreeNode root)
+	public void printTree(Node root)
 	{
 		while(root != null)
 		{
@@ -80,7 +92,7 @@ public class TreeGenerator {
 				System.out.print("|--");
 			
 			if(root.isRoot())
-				System.out.print(root.getUserObject()+"\n");
+				System.out.print(((Entity)root.getUserObject()).e_name + "\n");
 			else
 				System.out.print(((Entity)root.getUserObject()).e_name + "\n");
 			
