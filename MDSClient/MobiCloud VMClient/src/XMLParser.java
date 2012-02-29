@@ -23,8 +23,9 @@ public class XMLParser {
 	private NodeList nl;
 	private int type;
 	private Hashtable<String, String> atr;
-	private String[] data;
+	private String data;
 	private Msg[] msg;
+	private int counter;
 
 	
 	public XMLParser(String str) throws ParserConfigurationException, SAXException, IOException {
@@ -75,6 +76,7 @@ public class XMLParser {
 
 
 	public Msg[] getMsgList() {
+		counter = 0;
 		if(!this.isEmpty()){
 			for(int i=0; i<nl.getLength();i++){
 				Element el=(Element)nl.item(i);
@@ -83,13 +85,33 @@ public class XMLParser {
 				for(int j=0; j<nll.getLength();j++){
 					String type = nll.item(j).getNodeName();
 					if(type.equals("view")){
+						atr.clear();
 						atr.put("type", ((Element)nll.item(j)).getAttribute("type"));
 						atr.put("jid", ((Element)nll.item(j)).getAttribute("jid"));
-						//data =((Element)nll.item(j)).getNodeValue().split("%@!");
-						msg[j]= new Msg(Integer.parseInt(atr.get("type")), atr);
+						msg[counter++]= new Msg(Integer.parseInt(atr.get("type")), atr);
 					}
-					if(type.equals("dd")){
-						
+					if(type.equals("modify")){
+						Element mod = (Element)nll.item(j);
+						NodeList modlist =mod.getChildNodes();
+						for(int k=0; k<modlist.getLength(); k++)
+						{
+							 atr.clear();
+							 String t = modlist.item(k).getNodeName();
+							 if(t.equals("user_permission"))
+							 {
+								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
+								 atr.put("jid", ((Element) modlist.item(j)).getAttribute("jid"));
+								 atr.put("permission",((Element)modlist.item(k)).getAttribute("permission"));
+								 msg[counter++]= new Msg(MsgDict.USERPERMISSION, atr);
+							 }
+							 if(t.equals("group_permission"))
+							 {
+								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
+								 atr.put("gid", ((Element) modlist.item(j)).getAttribute("gid"));
+								 atr.put("permission",((Element)modlist.item(k)).getAttribute("permission"));
+								 msg[counter++]= new Msg(MsgDict.GROUPPERMISSION, atr);
+							 }
+						}
 					}
 					
 				}

@@ -33,6 +33,19 @@ public class MsgDict {
 	public static final int CHAT_REQUEST = 0X3000;
 
 	public static final int DES_UPDATE = 0X4000;
+	
+	public static final int REQUEST_FAILED = 0x7771;
+	public static final int REQUEST_SUCCESSFUL = 0x7772;
+	
+	//Access Control
+	public static final int USERPERMISSION = 0x51;
+	public static final int GROUPPERMISSION = 0x52;
+	
+	
+	public static final int PRIVATE = 0x5550;
+	public static final int PUBLIC = 0x5551;
+	public static final int SHARED = 0x5552;
+	
 
 	
 }

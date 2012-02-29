@@ -91,7 +91,10 @@ public class MessageHandler extends Thread  {
 			for(Msg msg : msgs){
 				if(msg!=null)
 				{
-					
+					Message outMessage = new Message();
+					outMessage.setType(Type.normal);
+					outMessage.setFrom(c.getConnection().getUser());
+					outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
 					switch (msg.type) {
 						default:
 						{
@@ -100,11 +103,15 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.FILELIST_REQUEST:
 						{
-							Message outMessage = new Message();
-							outMessage.setType(Type.normal);
 							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),msg.getAtr("jid")));
-							outMessage.setFrom(c.getConnection().getUser());
-							outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
+							c.getConnection().sendPacket(outMessage);
+							break;
+						}
+						case MsgDict.USERPERMISSION:
+						{
+							outMessage.setBody(c.createResponseModify(
+									dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
+											Integer.parseInt(msg.getAtr("permission")))));
 							c.getConnection().sendPacket(outMessage);
 							break;
 						}

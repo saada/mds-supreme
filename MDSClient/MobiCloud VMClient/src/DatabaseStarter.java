@@ -70,4 +70,7 @@ public class DatabaseStarter {
 			return "FAIL";
 		}
 	}
+	public boolean updateUserPermission(int e_id, String jid, int permission) {
+		return dao.updateUserPermission(e_id, jid, permission);
+	}
 }

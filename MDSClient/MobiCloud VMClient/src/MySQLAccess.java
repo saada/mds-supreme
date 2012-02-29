@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import org.jivesoftware.smack.Roster;
@@ -30,7 +31,7 @@ public class MySQLAccess {
                 Class.forName("com.mysql.jdbc.Driver");
                 // Setup the connection with the DB
                 connect = DriverManager.getConnection("jdbc:mysql://localhost/mds_db?"
-                                                                                        + "user=root&password=saada");
+                                                           + "user=root&password=saada");
         }
         
         public void createStmt() throws Exception {
@@ -225,6 +226,91 @@ public class MySQLAccess {
             	  
         }
         
+        public boolean updateUserPermission(int e_id, String jid, int permission)
+        {
+        	try {
+                //change entity permission
+                preparedStatement = connect
+                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? , U_id = ?)");
+                preparedStatement.setInt(1, permission);
+                preparedStatement.setInt(2, e_id);
+                preparedStatement.setString(3, jid);
+                preparedStatement.executeUpdate();
+
+                //get specific entity to check if its type is directory
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?");
+        		preparedStatement.setInt(1, e_id);
+                preparedStatement.executeQuery();
+                ResultSet rs = preparedStatement.getResultSet();
+                
+                //get entire entity table to find sub-entities
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity");
+        		preparedStatement.executeQuery();
+                ResultSet sub_rs = preparedStatement.getResultSet();
+                
+                //change sub-entity permissions if applicable (directory entity)
+                while(rs.next())
+                {
+                	if(rs.getString("E_type").equals("dir"))
+        			{
+                		String dir_url = rs.getString("E_url")+"/"+rs.getString("E_name")+"/";
+                		while(sub_rs.next())
+                		{	
+                			if(sub_rs.getString("E_type").equals("dir"))
+                			{
+                				updateUserPermission(sub_rs.getInt("E_id"), jid, permission);
+                			}
+                			else
+                			{
+	                			String sub_url = sub_rs.getString("E_url");
+	                			if(sub_url.startsWith(dir_url))
+	                			{
+	                				preparedStatement = connect
+	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? , U_id = ?)");
+			                        preparedStatement.setInt(1, permission);
+			                        preparedStatement.setInt(2, sub_rs.getInt("E_id"));
+			                        preparedStatement.setString(3, jid);
+			                        preparedStatement.executeUpdate();
+	                			}
+                			}
+                		}
+        			}
+                }
+            	return true;
+	        }
+        	catch (Exception e) {
+	            return false;
+	        }  
+        }
+        
+        
+        public boolean updateGroupPermission(int e_id, String gid, int permission)
+        {
+        	//Change group permission means we have to change the permission of each entity for each user of that group.
+        	//In other words, we have to change
+        	//1. Group entity permissions
+        	//2. User entity permissions that belong to the corresponding group
+        	
+        	
+        	
+        	
+        	
+        	
+        	try {
+        		//change group permission
+                preparedStatement = connect
+                                .prepareStatement("UPDATE mds_db.T_UserPermit set GP_permission = ? where E_id = ? , G_id = ?)");
+                preparedStatement.setInt(1, permission);
+                preparedStatement.setInt(2, e_id);
+                preparedStatement.setString(3, gid);
+                preparedStatement.executeUpdate();
+            	return true;
+	        }
+        	catch (Exception e) {
+	            return false;
+	        }  
+        }
+        
         // You need to close the resultSet
         public void close() {
                 try {
@@ -243,5 +329,4 @@ public class MySQLAccess {
 
                 }
         }
-
 }
