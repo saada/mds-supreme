@@ -43,15 +43,17 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		FileTransferManager manager;
 		OutputStream out;
 		FileInputStream in;
-
+		
+		DatabaseStarter dbStarter;
 
 		public JabberAPI(DatabaseStarter dbStarter) {
+			this.dbStarter = dbStarter;
 			// turn on the enhanced debugger
 			XMPPConnection.DEBUG_ENABLED = true;
 			
 			// Enter your login information here
 			try {
-				login("xin", "xin", "VM");
+				login("lin", "lin", "VM");
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -324,5 +326,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			return "<MSG><responses><createDir>DIRECTORY CREATED SUCCESSFULLY</createDir></responses></MSG>";
 		}
 		//</createDir>
+		
+		
 	}
 

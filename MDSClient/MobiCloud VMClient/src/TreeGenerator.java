@@ -7,15 +7,70 @@ import java.util.Date;
 import Mobi.xmpp.Entity;
 import Mobi.tree.Node;
 
-
 public class TreeGenerator {
 	Node root;
+//	public String greatestCommonPrefix(String a, String b) {
+//	    int minLength = Math.min(a.length(), b.length());
+//	    for (int i = 0; i < minLength; i++) {
+//	        if (a.charAt(i) != b.charAt(i)) {
+//	            return a.substring(0, i);
+//	        }
+//	    }
+//	    return a.substring(0, minLength);
+//	}
+	public void generatePermitted(ResultSet set) throws SQLException
+	{
+		//
+		
+//		root = new Node(new Entity("0","dir","SHARED ENTITIES"));
+//		//get size of resultset
+//		int size =0;  
+//		if (set != null)   
+//		{  
+//		  set.beforeFirst();  
+//		  set.last();  
+//		  size = set.getRow();
+//		}
+//		//
+//		if(size == 0)
+//		{
+//			root = new Node(new Entity("0","dir","NO SHARED FILES"));
+//			return;
+//		}
+//		
+//		//find root node
+//		set.first();
+//		String prefix = set.getString("E_url");
+//		set.beforeFirst();
+//		while(set.next())
+//		{
+//			String e_id = set.getString("e_id");
+//			String e_type = set.getString("e_type");
+//			String e_name = set.getString("e_name");
+//			Long e_size = set.getLong("e_size");
+//			String e_url = set.getString("e_url");
+//			Date e_modate = set.getDate("e_modate");
+//			set.getString("E_url");
+//			if(size == 1)
+//			{
+//				root.add(new Node(new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, 2)));
+//				return;
+//			}
+//			else if(!set.isLast())
+//			{
+//				prefix = greatestCommonPrefix(prefix, set.getString("E_url"));
+//			}
+//		}
+//		//after getting prefix...?
+//		root.add(new Node(new Entity("-1", "dir",prefix.substring(prefix.lastIndexOf('/')))));
+	}
+	
 	
 	public void generate(ResultSet set) throws SQLException
 	{
 		//create mutable tree nodes
 		Date today = Calendar.getInstance().getTime();
-		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,"public"));
+		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,1));
 		Node node;
 		String prevUrl = "";
 		Entity entity;
@@ -29,7 +84,7 @@ public class TreeGenerator {
 			Date e_modate = set.getDate("e_modate");
 			
 			//store current set in an Entity data structure instance and add to tree
-			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, "public");
+			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, 1);
 			node = new Node(entity);
 			if(root.isRoot())
 			{
@@ -66,7 +121,7 @@ public class TreeGenerator {
 					}
 				}
 			}
-			printTree(root);
+			//printTree(root);
 		}
 		while(!root.isRoot())
 		{
@@ -81,7 +136,7 @@ public class TreeGenerator {
 			if(url.charAt(i) == '/')
 					counter++;
 		}
-		System.out.println("Level = "+counter);
+		//System.out.println("Level = "+counter);
 		return counter;
 	}
 	public void printTree(Node root)

@@ -54,94 +54,94 @@ public class GetFilePath {
 		//FileWriter fstream = new FileWriter("out.xml", true);
 		//BufferedWriter out = new BufferedWriter(fstream);	
 	}
-	public static void processXML(File entity) throws ParserConfigurationException, TransformerException, SAXException, IOException {
-		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-			String str;
-			Document doc = docBuilder.newDocument();			
-			
-			if(entity.isDirectory())
-			{
-				str = "dir";
-				Element rootElement = doc.createElement("Path");
-				doc.appendChild(rootElement);
-				
-				Attr attr = doc.createAttribute(str);
-				attr.setValue(entity.getParent());
-				rootElement.setAttributeNode(attr);
-				
-				Element staff = doc.createElement("Folder");
-				rootElement.appendChild(staff);
-		 
-				// set attribute to staff element
-				Attr attr_file = doc.createAttribute("name");
-				attr_file.setValue(entity.getName());
-				staff.setAttributeNode(attr_file);
-				
-			}
-			else
-			{
-				str = "file";
-				String st = "";
-				Element rootElement = doc.createElement("Path");
-				doc.appendChild(rootElement);
-				
-				Attr attr = doc.createAttribute(str);
-				attr.setValue(entity.getParent());
-				rootElement.setAttributeNode(attr);
-				
-				Element staff = doc.createElement("File");
-				rootElement.appendChild(staff);
-		 
-				// set attribute to staff element
-				Attr attr_file = doc.createAttribute("name");
-				attr_file.setValue(entity.getName());
-				staff.setAttributeNode(attr_file);
-				
-				// firstname elements
-				long filesize = entity.length();
-		        long filesizeInKB = filesize / 1024;
-		        String size = filesizeInKB + "KB";
-				
-				Element file_size = doc.createElement("file_size");
-				file_size.appendChild(doc.createTextNode(size));
-				staff.appendChild(file_size);
-		 
-				// lastname elements
-				Date d = new Date(entity.lastModified());
-				String string = d.toString();
-				Element modified_date = doc.createElement("modified_date");
-				modified_date.appendChild(doc.createTextNode(string));
-				staff.appendChild(modified_date);			
-				
-			}
-			
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-			
-			//create string from eml tree
-			StringWriter sw = new StringWriter();
-			StreamResult result = new StreamResult (sw); 
-			DOMSource source = new DOMSource(doc);
-			transformer.transform(source, result);
-			xmlString +=  sw.toString();
-			
-			Date d = new Date(entity.lastModified());
-            long filesizeInKB = computeSize(entity);
-            
-
-			str += ", "+entity.getName()+ ", " +  filesizeInKB + "KB"+", "+entity.getParent()+", "+ d ;
-			str = str.replace("\\", "\\\\");
-			System.out.println(str + "\n");
-			System.out.println(xmlString);		
-	}
+//	public static void processXML(File entity) throws ParserConfigurationException, TransformerException, SAXException, IOException {
+//		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+//		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+//			String str;
+//			Document doc = docBuilder.newDocument();			
+//			
+//			if(entity.isDirectory())
+//			{
+//				str = "dir";
+//				Element rootElement = doc.createElement("Path");
+//				doc.appendChild(rootElement);
+//				
+//				Attr attr = doc.createAttribute(str);
+//				attr.setValue(entity.getParent());
+//				rootElement.setAttributeNode(attr);
+//				
+//				Element staff = doc.createElement("Folder");
+//				rootElement.appendChild(staff);
+//		 
+//				// set attribute to staff element
+//				Attr attr_file = doc.createAttribute("name");
+//				attr_file.setValue(entity.getName());
+//				staff.setAttributeNode(attr_file);
+//				
+//			}
+//			else
+//			{
+//				str = "file";
+//				String st = "";
+//				Element rootElement = doc.createElement("Path");
+//				doc.appendChild(rootElement);
+//				
+//				Attr attr = doc.createAttribute(str);
+//				attr.setValue(entity.getParent());
+//				rootElement.setAttributeNode(attr);
+//				
+//				Element staff = doc.createElement("File");
+//				rootElement.appendChild(staff);
+//		 
+//				// set attribute to staff element
+//				Attr attr_file = doc.createAttribute("name");
+//				attr_file.setValue(entity.getName());
+//				staff.setAttributeNode(attr_file);
+//				
+//				// firstname elements
+//				long filesize = entity.length();
+//		        long filesizeInKB = filesize / 1024;
+//		        String size = filesizeInKB + "KB";
+//				
+//				Element file_size = doc.createElement("file_size");
+//				file_size.appendChild(doc.createTextNode(size));
+//				staff.appendChild(file_size);
+//		 
+//				// lastname elements
+//				Date d = new Date(entity.lastModified());
+//				String string = d.toString();
+//				Element modified_date = doc.createElement("modified_date");
+//				modified_date.appendChild(doc.createTextNode(string));
+//				staff.appendChild(modified_date);			
+//				
+//			}
+//			
+//			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+//			Transformer transformer = transformerFactory.newTransformer();
+//			transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+//			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+//			
+//			//create string from eml tree
+//			StringWriter sw = new StringWriter();
+//			StreamResult result = new StreamResult (sw); 
+//			DOMSource source = new DOMSource(doc);
+//			transformer.transform(source, result);
+//			xmlString +=  sw.toString();
+//			
+//			Date d = new Date(entity.lastModified());
+//            long filesizeInKB = computeSize(entity);
+//            
+//
+//			str += ", "+entity.getName()+ ", " +  filesizeInKB + "KB"+", "+entity.getParent()+", "+ d ;
+//			str = str.replace("\\", "\\\\");
+//			System.out.println(str + "\n");
+//			System.out.println(xmlString);		
+//	}
 
 
 	public void visitAllDirsAndFiles(File dir) throws ParserConfigurationException, TransformerException, SAXException, IOException {
 		 	process(dir);
-	        processXML(dir);
+	        //processXML(dir);
 
 	    if (dir.isDirectory()) {
 	        String[] children = dir.list();
@@ -158,7 +158,7 @@ public class GetFilePath {
 	public static void visitAllDirs(File dir) throws ParserConfigurationException, TransformerException, SAXException, IOException {
 	    if (dir.isDirectory()) {
 	        process(dir);
-	        processXML(dir);
+	        //processXML(dir);
 
 	        String[] children = dir.list();
 	        for (int i=0; i<children.length; i++) {
@@ -176,7 +176,7 @@ public class GetFilePath {
 	        }
 	    } else {
 	    	 	process(dir);
-		        processXML(dir);
+		        //processXML(dir);
 	    }
 	}
 	

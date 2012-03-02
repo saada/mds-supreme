@@ -103,7 +103,15 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.FILELIST_REQUEST:
 						{
-							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),msg.getAtr("jid")));
+							//check if the user requesting is owner
+							if(c.getConnection().getUser().split("/")[0].equals(msg.getAtr("jid")))
+							{
+								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),msg.getAtr("jid")));
+							}
+							else
+							{
+								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(msg.getAtr("jid")),msg.getAtr("jid")));
+							}
 							c.getConnection().sendPacket(outMessage);
 							break;
 						}

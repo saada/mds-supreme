@@ -57,7 +57,7 @@ public class MySQLAccess {
                 try {                   
                         statement = connect.createStatement();
                         // Result set get the result of the SQL query
-                        resultSet = statement.executeQuery("select E_id from mds_db.t_entity;");
+                        resultSet = statement.executeQuery("select E_id from mds_db.T_Entity;");
                         
                         return resultSet;
                 } catch (Exception e) {
@@ -109,13 +109,13 @@ public class MySQLAccess {
                                 {
                                         default:
                                         {
-                                                System.out.println(i+":"+attr[i]+", casedef");
+                                                //System.out.println(i+":"+attr[i]+", casedef");
                                                 preparedStatement.setString(i+1, attr[i]);
                                                 break;
                                         }
                                         case 2:
                                         {
-                                                System.out.println(i+":"+attr[i]+", case2");
+                                                //System.out.println(i+":"+attr[i]+", case2");
                                                 preparedStatement.setDouble(i+1,
                                                                         Double.parseDouble(
                                                                                 attr[i].substring(0, attr[i].indexOf("KB"))));
@@ -123,7 +123,7 @@ public class MySQLAccess {
                                         }
                                         case 4:
                                         {
-                                                System.out.println(i+":"+attr[i]+", case4");
+                                                //System.out.println(i+":"+attr[i]+", case4");
                                                 preparedStatement.setDate(i+1, java.sql.Date.valueOf(attr[i]));
                                                 break;
                                         }
@@ -138,7 +138,7 @@ public class MySQLAccess {
         
         public void insertUserPermit(int entityID, String userID, int permission) throws Exception {
         	 preparedStatement = connect
-                     .prepareStatement("insert into  mds_db.t_userpermit values (default, '" + entityID + "', '" + permission + "', '" + userID + "')");
+                     .prepareStatement("insert into  mds_db.T_UserPermit values (default, '" + entityID + "', '" + permission + "', '" + userID + "')");
         	 
         	 preparedStatement.executeUpdate();
         }
@@ -189,13 +189,13 @@ public class MySQLAccess {
                         String url = resultSet.getString("e_url");
                         Date modifiedDate = resultSet.getDate("e_modate");
                         
-                        System.out.println("id: " + id);
-                        System.out.println("type: " + type);
-                        System.out.println("name: " + name);
-                        System.out.println("size: "+ size);
-                        System.out.println("url: " + url);
-                        System.out.println("modified: " + modifiedDate);
-                        System.out.println("**************************");
+                        System.out.print("id: " + id);
+                        System.out.print(", type: " + type);
+                        System.out.print(", name: " + name);
+                        System.out.print(", size: "+ size);
+                        System.out.print(", url: " + url);
+                        System.out.print(", modified: " + modifiedDate);
+                        System.out.print("\n**************************\n");
                 }
         }
         
@@ -210,7 +210,6 @@ public class MySQLAccess {
           	    	insertUserPermit(entityID, r.getName(), 0);
           	    }
   			}
-            	  
         }
         
         public void addAllGroups(Collection<RosterGroup> groups) throws Exception
@@ -288,14 +287,7 @@ public class MySQLAccess {
         {
         	//Change group permission means we have to change the permission of each entity for each user of that group.
         	//In other words, we have to change
-        	//1. Group entity permissions
-        	//2. User entity permissions that belong to the corresponding group
-        	
-        	
-        	
-        	
-        	
-        	
+        	//1. Group entity permissions   	
         	try {
         		//change group permission
                 preparedStatement = connect
@@ -329,4 +321,10 @@ public class MySQLAccess {
 
                 }
         }
+
+		public ResultSet selectPermittedEntites(String jid) throws SQLException {
+			preparedStatement = connect.prepareStatement("select mds_db.T_Entity.* from ((SELECT * FROM mds_db.T_UserPermit WHERE U_id = ? and UP_permission = 2) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
+			preparedStatement.setString(1,jid);
+			return preparedStatement.executeQuery();
+		}
 }

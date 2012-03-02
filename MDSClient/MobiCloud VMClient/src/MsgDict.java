@@ -41,7 +41,6 @@ public class MsgDict {
 	public static final int USERPERMISSION = 0x51;
 	public static final int GROUPPERMISSION = 0x52;
 	
-	
 	public static final int PRIVATE = 0x5550;
 	public static final int PUBLIC = 0x5551;
 	public static final int SHARED = 0x5552;

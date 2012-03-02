@@ -31,6 +31,7 @@ public class DatabaseStarter {
 			//clear and reset database
 			dao.deleteAll(table);
 			dao.resetAutoID(table);
+			dao.deleteAll("T_UserPermit");
 			
 			//insert entities to database
 			for(int i=0; i< recordsList.size(); i++) {
@@ -70,7 +71,20 @@ public class DatabaseStarter {
 			return "FAIL";
 		}
 	}
+	public String getLocalTreeString(String jid) {
+		TreeGenerator myTree = new TreeGenerator();
+		try {
+			myTree.generate(dao.selectPermittedEntites(jid));
+			String treeString = Serialization.toString(myTree.root);
+			System.out.println(treeString);
+			return treeString;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "FAIL";
+		}
+	}
 	public boolean updateUserPermission(int e_id, String jid, int permission) {
 		return dao.updateUserPermission(e_id, jid, permission);
 	}
+	
 }

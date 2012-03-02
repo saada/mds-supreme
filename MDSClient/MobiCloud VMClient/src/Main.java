@@ -1,10 +1,6 @@
-import java.util.*;
 import java.io.*;
 
-import javax.swing.JTree;
-
-import org.jivesoftware.smack.filter.PacketTypeFilter;
-import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.RosterEntry;
 
 public class Main {
 	public static void main(String[] args) throws Exception {
@@ -17,7 +13,6 @@ public class Main {
 	    
 	    DatabaseStarter dbStarter = new DatabaseStarter();
 	    dbStarter.getLocalTreeString();
-	
 		
 	/*###################################################
 	 *                   Messaging
@@ -25,6 +20,12 @@ public class Main {
 		//send file list to another client
 		// declare variables
 		JabberAPI c = new JabberAPI(dbStarter);
+		c.dbStarter.dao.addAllUsers(c.getMyRoster());
+		for(RosterEntry r : c.getMyRoster())
+		{
+			System.out.println(r.getName());
+		}
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
 
