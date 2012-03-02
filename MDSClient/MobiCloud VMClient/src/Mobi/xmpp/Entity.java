@@ -10,11 +10,11 @@ public class Entity implements Serializable{
 	
 	public String e_id;	
 	public String e_owner;
-	public String e_shareby;
-	public String getE_shareby() {
+	public int e_shareby;
+	public int getE_shareby() {
 		return e_shareby;
 	}
-	public void setE_shareby(String e_shareby) {
+	public void setE_shareby(int e_shareby) {
 		this.e_shareby = e_shareby;
 	}
 
@@ -24,7 +24,7 @@ public class Entity implements Serializable{
 	public Date e_modate;
 	
 	public Entity(String e_id, String e_type, String e_name,
-			Long e_size, String e_url, Date e_modate, String e_shareby){
+			Long e_size, String e_url, Date e_modate, int e_shareby){
 		this.e_id = e_id;
 		this.e_type = e_type;
 		this.e_name = e_name;
