@@ -18,10 +18,37 @@ public class TreeGenerator {
 //	    }
 //	    return a.substring(0, minLength);
 //	}
+	public boolean containsEid(ResultSet set, int e_id) throws SQLException
+	{
+		set.beforeFirst();
+		while(set.next())
+		{
+			if(e_id ==  set.getInt("E_id"))
+				return true;
+		}
+		return false;
+	}
+	
 	public void generatePermitted(ResultSet set) throws SQLException
 	{
-		//
-		
+		Node newTree = root;
+		Node cursor = root;
+		if(root != null)
+		{
+			while(cursor != null)
+			{
+				if(cursor.isLeaf())
+				{
+					if(!containsEid(set,Integer.parseInt(((Entity)cursor.getOb()).e_id)))
+					{
+						Node temp = cursor.getParent();
+						cursor.remove(temp);
+						temp = cursor;
+					}
+				}
+				cursor = cursor.getNextNode();
+			}
+		}
 //		root = new Node(new Entity("0","dir","SHARED ENTITIES"));
 //		//get size of resultset
 //		int size =0;  

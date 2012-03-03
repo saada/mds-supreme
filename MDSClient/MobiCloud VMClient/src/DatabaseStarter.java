@@ -74,7 +74,8 @@ public class DatabaseStarter {
 	public String getLocalTreeString(String jid) {
 		TreeGenerator myTree = new TreeGenerator();
 		try {
-			myTree.generate(dao.selectPermittedEntites(jid));
+			myTree.generate(dao.selectAll(table));
+			myTree.generatePermitted(dao.selectPermittedEntites(jid));
 			String treeString = Serialization.toString(myTree.root);
 			System.out.println(treeString);
 			return treeString;

@@ -277,7 +277,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 				for(int j=0; j<jids.size(); j++)
 				{
 					jid = jids.get(j);
-					str+="<modify><user_permission e_id=\""+entityId
+					str+="<modify type = "+MsgDict.USERPERMISSION_REQUEST+"><user_permission e_id=\""+entityId
 							+"\" jid=\""+jid
 							+"\" permission=\""+permission
 							+"\"></user_permission></modify>";
@@ -287,27 +287,27 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			 str+="</requests></MSG>";
 			 return str;
 		}
-		public String createRequestModifyGroupPermission(ArrayList<Integer> entityIds, ArrayList<String> gids, int permission)
-		{
-			String str = "<MSG><requests>";
-			int entityId;
-			String gid;
-			for(int i=0; i<entityIds.size(); i++)
-			{
-				entityId = entityIds.get(i);
-				for(int j=0; j<gids.size(); j++)
-				{
-					gid = gids.get(j);
-					str+="<modify><group_permission e_id=\""+entityId
-							+"\" gid=\""+gid
-							+"\" permission=\""+permission
-							+"\"></group_permission></modify>";
-				}
-				
-			}
-			 str+="</requests></MSG>";
-			 return str;
-		}
+//		public String createRequestModifyGroupPermission(ArrayList<Integer> entityIds, ArrayList<String> gids, int permission)
+//		{
+//			String str = "<MSG><requests>";
+//			int entityId;
+//			String gid;
+//			for(int i=0; i<entityIds.size(); i++)
+//			{
+//				entityId = entityIds.get(i);
+//				for(int j=0; j<gids.size(); j++)
+//				{
+//					gid = gids.get(j);
+//					str+="<modify><group_permission e_id=\""+entityId
+//							+"\" gid=\""+gid
+//							+"\" permission=\""+permission
+//							+"\"></group_permission></modify>";
+//				}
+//				
+//			}
+//			 str+="</requests></MSG>";
+//			 return str;
+//		}
 		public String createResponseModify(boolean success)
 		{
 			if(success)

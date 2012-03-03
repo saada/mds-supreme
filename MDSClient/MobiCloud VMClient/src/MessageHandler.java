@@ -115,7 +115,7 @@ public class MessageHandler extends Thread  {
 							c.getConnection().sendPacket(outMessage);
 							break;
 						}
-						case MsgDict.USERPERMISSION:
+						case MsgDict.USERPERMISSION_REQUEST:
 						{
 							outMessage.setBody(c.createResponseModify(
 									dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
