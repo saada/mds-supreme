@@ -53,7 +53,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			
 			// Enter your login information here
 			try {
-				login("lin", "lin", "VM");
+				login("xin", "xin", "VM");
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

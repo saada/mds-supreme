@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -62,7 +63,8 @@ public class DatabaseStarter {
 		
 		TreeGenerator myTree = new TreeGenerator();
 		try {
-			myTree.generate(dao.selectAll(table));
+			ResultSet rs = dao.selectAll(table);
+			myTree.generate(dao.selectAll(table),dao);
 			String treeString = Serialization.toString(myTree.root);
 			System.out.println(treeString);
 			return treeString;
@@ -74,9 +76,8 @@ public class DatabaseStarter {
 	public String getLocalTreeString(String jid) {
 		TreeGenerator myTree = new TreeGenerator();
 		try {
-			myTree.generate(dao.selectAll(table));
-			myTree.generatePermitted(dao.selectPermittedEntites(jid));
-			String treeString = Serialization.toString(myTree.root);
+			myTree.generate(dao.selectAll(table),dao);
+			String treeString = Serialization.toString(myTree.generatePermitted(dao.selectPermittedEntites(jid)));
 			System.out.println(treeString);
 			return treeString;
 		} catch (Exception e) {

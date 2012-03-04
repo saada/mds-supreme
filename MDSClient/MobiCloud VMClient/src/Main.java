@@ -13,6 +13,7 @@ public class Main {
 	    
 	    DatabaseStarter dbStarter = new DatabaseStarter();
 	    dbStarter.getLocalTreeString();
+	    //dbStarter.getLocalTreeString("tom");
 		
 	/*###################################################
 	 *                   Messaging

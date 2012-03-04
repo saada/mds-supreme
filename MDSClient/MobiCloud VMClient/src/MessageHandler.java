@@ -2,6 +2,7 @@
 import java.io.File; 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
@@ -86,15 +87,18 @@ public class MessageHandler extends Thread  {
 		// Log.i("DoWork: " + ((Message) p).getBody());
 		XMLParser parser;
 		try {
-			parser = new XMLParser(((Message) p).getBody());
-			Msg[] msgs = parser.getMsgList();
+			parser = new XMLParser((Message) p);
+			ArrayList<Msg> msgs = new ArrayList<Msg>();
+			msgs = parser.getMsgList();
+			Message outMessage = new Message();
+			boolean success = true;
+			int msgType = 0;
 			for(Msg msg : msgs){
 				if(msg!=null)
 				{
-					Message outMessage = new Message();
+					outMessage = new Message();
 					outMessage.setType(Type.normal);
 					outMessage.setFrom(c.getConnection().getUser());
-					outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
 					switch (msg.type) {
 						default:
 						{
@@ -103,13 +107,16 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.FILELIST_REQUEST:
 						{
+							msgType = msg.type;
 							//check if the user requesting is owner
 							if(c.getConnection().getUser().split("/")[0].equals(msg.getAtr("jid")))
 							{
+								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),msg.getAtr("jid")));
 							}
 							else
 							{
+								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(msg.getAtr("jid")),msg.getAtr("jid")));
 							}
 							c.getConnection().sendPacket(outMessage);
@@ -117,14 +124,20 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.USERPERMISSION_REQUEST:
 						{
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
-											Integer.parseInt(msg.getAtr("permission")))));
-							c.getConnection().sendPacket(outMessage);
+							msgType = msg.type;
+							if(!(dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
+											Integer.parseInt(msg.getAtr("permission")))))
+								success = false;
 							break;
 						}
 					}
 				}
+			}
+			if(msgType == MsgDict.USERPERMISSION_REQUEST)
+			{
+				outMessage.setTo(c.getConnection().getUser()+"/GoogleTV");
+				outMessage.setBody(c.createResponseModify(success));
+				c.getConnection().sendPacket(outMessage);
 			}
 		}
 		catch(Exception e)

@@ -40,7 +40,7 @@ public class Msg {
 
 	public Msg(int tagtype, Hashtable<String,String> attribute) {
 		type = tagtype;
-		atr = attribute;
+		atr = (Hashtable<String, String>) attribute.clone();
 	}
 
 	public static String msgString(String[] msgs) {

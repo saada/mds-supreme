@@ -227,23 +227,43 @@ public class MySQLAccess {
         
         public boolean updateUserPermission(int e_id, String jid, int permission)
         {
+        	switch(permission)
+        	{
+	        	case MsgDict.PUBLIC:
+	        	{
+	        		permission = 1;
+	        		break;
+	        	}
+	        	case MsgDict.PRIVATE:
+	        	{
+	        		permission = 0;
+	        		break;
+	        	}
+	        	case MsgDict.SHARED:
+	        	{
+	        		permission = 2;
+	        		break;
+	        	}
+        	
+        	}
+        		
         	try {
                 //change entity permission
                 preparedStatement = connect
-                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? , U_id = ?)");
+                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? and U_id = ?;");
                 preparedStatement.setInt(1, permission);
                 preparedStatement.setInt(2, e_id);
                 preparedStatement.setString(3, jid);
                 preparedStatement.executeUpdate();
 
                 //get specific entity to check if its type is directory
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?");
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?;");
         		preparedStatement.setInt(1, e_id);
                 preparedStatement.executeQuery();
                 ResultSet rs = preparedStatement.getResultSet();
                 
                 //get entire entity table to find sub-entities
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity");
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity;");
         		preparedStatement.executeQuery();
                 ResultSet sub_rs = preparedStatement.getResultSet();
                 
@@ -252,7 +272,7 @@ public class MySQLAccess {
                 {
                 	if(rs.getString("E_type").equals("dir"))
         			{
-                		String dir_url = rs.getString("E_url")+"/"+rs.getString("E_name")+"/";
+                		String dir_url = rs.getString("E_url")+rs.getString("E_name")+"/";
                 		while(sub_rs.next())
                 		{	
                 			if(sub_rs.getString("E_type").equals("dir"))
@@ -265,7 +285,7 @@ public class MySQLAccess {
 	                			if(sub_url.startsWith(dir_url))
 	                			{
 	                				preparedStatement = connect
-	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? , U_id = ?)");
+	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? and U_id = ?;");
 			                        preparedStatement.setInt(1, permission);
 			                        preparedStatement.setInt(2, sub_rs.getInt("E_id"));
 			                        preparedStatement.setString(3, jid);
@@ -326,5 +346,29 @@ public class MySQLAccess {
 			preparedStatement = connect.prepareStatement("select mds_db.T_Entity.* from ((SELECT * FROM mds_db.T_UserPermit WHERE U_id = ? and UP_permission = 2) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
 			preparedStatement.setString(1,jid);
 			return preparedStatement.executeQuery();
+		}
+
+		public int getPermission(int e_id) throws SQLException {
+			int perm = 0;
+			preparedStatement = connect.prepareStatement("select UP_permission from mds_db.T_UserPermit where E_id = ?;");
+			preparedStatement.setInt(1,e_id);
+			ResultSet result = preparedStatement.executeQuery();
+			while(result.next())
+			{
+				switch (result.getInt("UP_permission"))
+				{
+					case 1:
+					{
+						perm = 1;
+						break;
+					}
+					case 2:
+					{
+						perm = 2;
+						break;
+					}
+				};
+			}
+			return perm;
 		}
 }

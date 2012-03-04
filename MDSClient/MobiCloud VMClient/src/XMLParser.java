@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.jivesoftware.smack.packet.Message;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -24,20 +25,21 @@ public class XMLParser {
 	private int type;
 	private Hashtable<String, String> atr;
 	private String data;
-	private Msg[] msg;
-	private int counter;
+	private ArrayList<Msg> msg;
+	private String from;
 
 	
-	public XMLParser(String str) throws ParserConfigurationException, SAXException, IOException {
+	public XMLParser(Message p) throws ParserConfigurationException, SAXException, IOException {
 		super();
-		this.str = str;
+		this.from = p.getFrom();
+		this.str = p.getBody();
 		dbf=DocumentBuilderFactory.newInstance();		
 		db=dbf.newDocumentBuilder();
-		InputStream is=new ByteArrayInputStream(str.getBytes());
+		InputStream is=new ByteArrayInputStream(p.getBody().getBytes());
 		Document dm=db.parse(is);
 		nl=dm.getElementsByTagName("requests");
 		atr = new Hashtable<String, String>();
-		msg = new Msg[99999];
+		msg = new ArrayList<Msg>();
 	}
 	
 	
@@ -75,8 +77,7 @@ public class XMLParser {
 	}
 
 
-	public Msg[] getMsgList() {
-		counter = 0;
+	public ArrayList<Msg> getMsgList() {
 		if(!this.isEmpty()){
 			for(int i=0; i<nl.getLength();i++){
 				Element el=(Element)nl.item(i);
@@ -87,8 +88,8 @@ public class XMLParser {
 					if(type.equals("view")){
 						atr.clear();
 						atr.put("type", ((Element)nll.item(j)).getAttribute("type"));
-						atr.put("jid", ((Element)nll.item(j)).getAttribute("jid"));
-						msg[counter++]= new Msg(Integer.parseInt(atr.get("type")), atr);
+						atr.put("jid", from.split("/")[0]);
+						msg.add(new Msg(Integer.parseInt(atr.get("type")), atr));
 					}
 					if(type.equals("modify")){
 						Element mod = (Element)nll.item(j);
@@ -100,16 +101,9 @@ public class XMLParser {
 							 if(t.equals("user_permission"))
 							 {
 								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
-								 atr.put("jid", ((Element) modlist.item(j)).getAttribute("jid"));
+								 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
 								 atr.put("permission",((Element)modlist.item(k)).getAttribute("permission"));
-								 msg[counter++]= new Msg(MsgDict.USERPERMISSION, atr);
-							 }
-							 if(t.equals("group_permission"))
-							 {
-								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
-								 atr.put("gid", ((Element) modlist.item(j)).getAttribute("gid"));
-								 atr.put("permission",((Element)modlist.item(k)).getAttribute("permission"));
-								 msg[counter++]= new Msg(MsgDict.GROUPPERMISSION, atr);
+								 msg.add(new Msg(MsgDict.USERPERMISSION_REQUEST, atr));
 							 }
 						}
 					}

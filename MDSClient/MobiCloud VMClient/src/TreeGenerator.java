@@ -29,10 +29,10 @@ public class TreeGenerator {
 		return false;
 	}
 	
-	public void generatePermitted(ResultSet set) throws SQLException
+	public Node generatePermitted(ResultSet set) throws SQLException
 	{
 		Node newTree = root;
-		Node cursor = root;
+		Node cursor = newTree;
 		if(root != null)
 		{
 			while(cursor != null)
@@ -41,14 +41,28 @@ public class TreeGenerator {
 				{
 					if(!containsEid(set,Integer.parseInt(((Entity)cursor.getOb()).e_id)))
 					{
-						Node temp = cursor.getParent();
+						Node temp = cursor;
+						cursor=cursor.getParent();
 						cursor.remove(temp);
-						temp = cursor;
 					}
 				}
-				cursor = cursor.getNextNode();
+				if(cursor.getChildren().size()!= 0)
+					cursor = cursor.getNextNode();
+				else
+				{
+					if(!containsEid(set,Integer.parseInt(((Entity)cursor.getOb()).e_id)))
+					{
+						Node temp = cursor;
+						cursor=cursor.getParent();
+						cursor.remove(temp);
+					}
+					cursor = cursor.getNextNode();
+				}
 			}
 		}
+		printTree(newTree);
+		return newTree;
+	}
 //		root = new Node(new Entity("0","dir","SHARED ENTITIES"));
 //		//get size of resultset
 //		int size =0;  
@@ -90,10 +104,10 @@ public class TreeGenerator {
 //		}
 //		//after getting prefix...?
 //		root.add(new Node(new Entity("-1", "dir",prefix.substring(prefix.lastIndexOf('/')))));
-	}
+
 	
 	
-	public void generate(ResultSet set) throws SQLException
+	public void generate(ResultSet set, MySQLAccess dao) throws SQLException
 	{
 		//create mutable tree nodes
 		Date today = Calendar.getInstance().getTime();
@@ -111,7 +125,7 @@ public class TreeGenerator {
 			Date e_modate = set.getDate("e_modate");
 			
 			//store current set in an Entity data structure instance and add to tree
-			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, 1);
+			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, dao.getPermission(Integer.parseInt(e_id)));
 			node = new Node(entity);
 			if(root.isRoot())
 			{
