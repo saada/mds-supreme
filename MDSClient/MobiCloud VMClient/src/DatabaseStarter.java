@@ -85,7 +85,7 @@ public class DatabaseStarter {
 			return "FAIL";
 		}
 	}
-	public boolean updateUserPermission(int e_id, String jid, int permission) {
+	public boolean updateUserPermission(int e_id, String jid, int permission) throws Exception {
 		return dao.updateUserPermission(e_id, jid, permission);
 	}
 	
