@@ -65,6 +65,18 @@ public class MySQLAccess {
                 }
         }
         
+//        public ResultSet selectEntityIDByPath(String url, String name) throws Exception {
+//            try {                   
+//                    statement = connect.createStatement();
+//                    // Result set get the result of the SQL query
+//                    resultSet = statement.executeQuery("select E_id from mds_db.t_entity where E_url=" + url + "and E_name=" + name + ";");
+//                    
+//                    return resultSet;
+//            } catch (Exception e) {
+//                    throw e;
+//            }
+//    }
+//        
         public void delete(String table, int id) throws Exception {
                 try {
                         preparedStatement = connect
@@ -225,8 +237,101 @@ public class MySQLAccess {
             	  
         }
         
-        public boolean updateUserPermission(int e_id, String jid, int permission)
+//        public void setEntitytoPublicOrPrivate(String path, int permission) throws Exception {
+//        	int i = path.lastIndexOf('\\');
+//        	String entity_name = path.substring(i);
+//        	String url = path.substring(0, i);
+//        	
+//        	ResultSet resultSet = selectEntityIDByPath(url, entity_name);
+//        	
+//        	int e_id = -1;
+//        	while (resultSet.next()) {
+//        		e_id = resultSet.getInt("E_id"); 
+//        	}
+//        	
+//        	boolean test = false;
+//        	if(e_id != -1) {
+//        		test = updateEntityPermission(e_id, permission);
+//        	}
+//        	
+//        	if(test)	System.out.println("Successful!");
+//        	else	System.out.println("Unsuccessful!");
+//        }
+        
+        public boolean updateEntityPermission(int e_id, int permission)
         {
+        	try {
+                //change entity permission
+                preparedStatement = connect
+                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
+                preparedStatement.setInt(1, permission);
+                preparedStatement.setInt(2, e_id);
+                preparedStatement.executeUpdate();
+
+                //get specific entity to check if its type is directory
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?");
+        		preparedStatement.setInt(1, e_id);
+                preparedStatement.executeQuery();
+                ResultSet rs = preparedStatement.getResultSet();
+                
+                //get entire entity table to find sub-entities
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity");
+        		preparedStatement.executeQuery();
+                ResultSet sub_rs = preparedStatement.getResultSet();
+                
+                //change sub-entity permissions if applicable (directory entity)
+                while(rs.next())
+                {
+                	if(rs.getString("E_type").equals("dir"))
+        			{
+                		String dir_url = rs.getString("E_url")+"/"+rs.getString("E_name")+"/";
+                		while(sub_rs.next())
+                		{	
+                			if(sub_rs.getString("E_type").equals("dir"))
+                			{
+                				updateEntityPermission(sub_rs.getInt("E_id"), permission);
+                			}
+                			else
+                			{
+	                			String sub_url = sub_rs.getString("E_url");
+	                			if(sub_url.startsWith(dir_url))
+	                			{
+	                				preparedStatement = connect
+	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
+			                        preparedStatement.setInt(1, permission);
+			                        preparedStatement.setInt(2, sub_rs.getInt("E_id"));
+			                        preparedStatement.executeUpdate();
+	                			}
+                			}
+                		}
+        			}
+                }
+            	return true;
+	        }
+        	catch (Exception e) {
+	            return false;
+	        }  
+        }
+        
+        public boolean updateUserPermission(int e_id, String jid, int permission) throws Exception
+        {
+        	/////////////////////check if the entity is public. If yes, we should set the entity to private before we update user permission
+        	boolean isEntityPublic = true;
+        	
+        	preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_UserPermit where E_id = ?;");
+    		preparedStatement.setInt(1, e_id);
+            preparedStatement.executeQuery();
+            ResultSet allUserPermissions = preparedStatement.getResultSet();
+        	
+        	while(allUserPermissions.next()) {            		  
+      	    	int p = allUserPermissions.getInt("UP_permission");
+      	    	if(p != 1)	{
+      	    		isEntityPublic = false;
+      	    		break;
+      	    	}
+      	    }
+        	///////////////////check if public ends
+        	
         	switch(permission)
         	{
 	        	case MsgDict.PUBLIC:
@@ -248,6 +353,10 @@ public class MySQLAccess {
         	}
         		
         	try {
+        		///////////////////if the entity is public, we set the entity as private first
+        		if(isEntityPublic) {
+        			updateEntityPermission(e_id, 0);
+        		}
                 //change entity permission
                 preparedStatement = connect
                         .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ? and U_id = ?;");
@@ -255,6 +364,7 @@ public class MySQLAccess {
                 preparedStatement.setInt(2, e_id);
                 preparedStatement.setString(3, jid);
                 preparedStatement.executeUpdate();
+        		
 
                 //get specific entity to check if its type is directory
         		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?;");
@@ -301,66 +411,18 @@ public class MySQLAccess {
 	            return false;
 	        }  
         }
-        public boolean updateEntityPermission(int e_id, int permission)
-        {
-        try {
-                //change entity permission
-                preparedStatement = connect
-                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
-                preparedStatement.setInt(1, permission);
-                preparedStatement.setInt(2, e_id);
-                preparedStatement.executeUpdate();
-
-                //get specific entity to check if its type is directory
-		        preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?");
-		        preparedStatement.setInt(1, e_id);
-                preparedStatement.executeQuery();
-                ResultSet rs = preparedStatement.getResultSet();
-                
-                //get entire entity table to find sub-entities
-            	preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity");
-		        preparedStatement.executeQuery();
-                ResultSet sub_rs = preparedStatement.getResultSet();
-                
-                //change sub-entity permissions if applicable (directory entity)
-                while(rs.next())
-                {
-                if(rs.getString("E_type").equals("dir"))
-		        {
-		                String dir_url = rs.getString("E_url")+"/"+rs.getString("E_name")+"/";
-		                while(sub_rs.next())
-		                {
-		                if(sub_rs.getString("E_type").equals("dir"))
-		                {
-		                updateEntityPermission(sub_rs.getInt("E_id"), permission);
-		                }
-		                else
-		                {
-		                String sub_url = sub_rs.getString("E_url");
-		                if(sub_url.startsWith(dir_url))
-		                {
-		                preparedStatement = connect
-		                                       .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
-		                       preparedStatement.setInt(1, permission);
-		                       preparedStatement.setInt(2, sub_rs.getInt("E_id"));
-		                       preparedStatement.executeUpdate();
-		                }
-		                }
-		                }
-		        }
-		                }
-		            return true;
-		       }
-		        catch (Exception e) {
-		           return false;
-		       }  
-       }
+        
         
         public boolean updateGroupPermission(int e_id, String gid, int permission)
         {
         	//Change group permission means we have to change the permission of each entity for each user of that group.
         	//In other words, we have to change
-        	//1. Group entity permissions   	
+        	//1. Group entity permissions
+        	//2. User entity permissions that belong to the corresponding group       	
+        	
+        	
+        	
+        	
         	try {
         		//change group permission
                 preparedStatement = connect
@@ -396,7 +458,7 @@ public class MySQLAccess {
         }
 
 		public ResultSet selectPermittedEntites(String jid) throws SQLException {
-			preparedStatement = connect.prepareStatement("select mds_db.T_Entity.* from ((SELECT * FROM mds_db.T_UserPermit WHERE U_id = ? and UP_permission = 2) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
+			preparedStatement = connect.prepareStatement("select mds_db.T_Entity.* from ((SELECT * FROM mds_db.T_UserPermit WHERE U_id = ? and (UP_permission = 2 or UP_permission = 1)) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
 			preparedStatement.setString(1,jid);
 			return preparedStatement.executeQuery();
 		}
