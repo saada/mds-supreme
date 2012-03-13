@@ -109,12 +109,12 @@ public class MessageHandler extends Thread  {
 							//check if the user requesting is owner
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
-								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
+								outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
 							}
 							else
 							{
-								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
+								outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(from.split("@")[0]),from.split("@")[0]));
 							}
 							c.getConnection().sendPacket(outMessage);
@@ -145,7 +145,7 @@ public class MessageHandler extends Thread  {
 			}
 			if(msgType == MsgDict.USERPERMISSION_REQUEST)
 			{
-				outMessage.setTo(c.getConnection().getUser()+"/GoogleTV");
+				outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 				outMessage.setBody(c.createResponseModify(success));
 				c.getConnection().sendPacket(outMessage);
 			}

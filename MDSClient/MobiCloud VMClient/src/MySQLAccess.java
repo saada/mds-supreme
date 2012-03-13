@@ -354,8 +354,12 @@ public class MySQLAccess {
         		
         	try {
         		///////////////////if the entity is public, we set the entity as private first
-        		if(isEntityPublic) {
+        		if(isEntityPublic ) {
         			updateEntityPermission(e_id, 0);
+        		}
+        		if(jid.equalsIgnoreCase("All"))
+        		{
+        			return updateEntityPermission(e_id, permission);
         		}
                 //change entity permission
                 preparedStatement = connect
