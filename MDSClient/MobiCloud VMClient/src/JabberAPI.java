@@ -6,13 +6,26 @@
 	 */
 
 
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+
 import java.util.ArrayList;
 import java.util.Collection;
+
+import java.net.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
+import java.io.*;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -327,6 +340,271 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		}
 		//</createDir>
 		
+///////////////////////////////////////////////////////tcp file transfer send -- client
+		public void sendFileTcp(String ip, String filename){
+		 Socket s = null;
+	        try{
+
+	          int serverPort = 6880;
+	               
+
+	          s = new Socket(ip, serverPort);
+
+	          DataInputStream input = new DataInputStream( s.getInputStream());
+
+	          DataOutputStream output = new DataOutputStream( s.getOutputStream());
+	          
+
+	          	int index = filename.indexOf('.');
+		        File f = new File(filename);
+		        String sub = filename.substring(index);
+		        
+		        FileInputStream fin = null;
+		        FileChannel ch = null;
+
+		        try {
+		            fin = new FileInputStream(f);
+		            ch = fin.getChannel();
+		            int size = (int) ch.size();
+		            MappedByteBuffer buf = ch.map(MapMode.READ_ONLY, 0, size);
+			        byte[] bytes = new byte[size];
+		            buf.get(bytes);
+
+
+		              
+		              
+		              //output.writeInt(data.length());
+		              output.writeInt(sub.getBytes().length);
+		              output.writeInt(bytes.length);
+
+		              //Step 2 send length
+
+
+
+		              //output.writeBytes(data); // UTF is a string encoding
+		              output.write(sub.getBytes());
+		              output.write(bytes);
+
+		        } catch (IOException e) {
+		            // TODO Auto-generated catch block
+		            e.printStackTrace();
+		        } finally {
+		            try {
+		                if (fin != null) {
+		                    fin.close();
+		                }
+		                if (ch != null) {
+		                    ch.close();
+		                }
+		            } catch (IOException e) {
+		                // TODO Auto-generated catch block
+		                e.printStackTrace();
+		            }
+		        }
+
+	              //Step 1 send length
+
+
+
+	              //Step 1 read length
+
+	              int nb = input.readInt();
+	              
+
+	              byte[] digit = new byte[nb];
+
+	              //Step 2 read byte
+
+	              for(int i = 0; i < nb; i++)
+
+	                digit[i] = input.readByte();
+
+	          
+
+	        }
+
+	        catch (UnknownHostException e){
+
+	            System.out.println("Sock:"+e.getMessage());}
+
+	        catch (EOFException e){
+
+	            System.out.println("EOF:"+e.getMessage()); }
+
+	        catch (IOException e){
+
+	            System.out.println("IO:"+e.getMessage());}
+
+	        finally {
+
+	              if(s!=null)
+
+	                  try {s.close();
+
+	                  }
+
+	                  catch (IOException e) {/*close failed*/}
+
+	        }
+		}
+		  
+		
+		
+///////////////////////////////////////////////////////tcp file transter revceive -- server
+		public void receiveFileTcp(String path){
+			try{
+
+	            int serverPort = 6880;
+
+	            ServerSocket listenSocket = new ServerSocket(serverPort);
+	        System.out.println("server start listening... ... ...");
+
+	         
+
+	            while(true) {
+
+	                Socket clientSocket = listenSocket.accept();
+	                
+	                Connection c = new Connection(clientSocket, path);
+
+	            }
+
+	    }
+
+	    catch(IOException e) {
+
+	        System.out.println("Listen :"+e.getMessage());}
+
+	  }
 		
 	}
 
+	class Connection extends Thread {
+
+	    DataInputStream input;
+
+	    DataOutputStream output;
+
+	    Socket clientSocket;
+	    
+	    String path;
+
+    public Connection (Socket aClientSocket, String p) {
+
+        try {
+        			path = p;
+                    clientSocket = aClientSocket;
+
+                    input = new DataInputStream( clientSocket.getInputStream());
+
+                    output =new DataOutputStream( clientSocket.getOutputStream());
+
+                    this.start();
+
+        }
+
+            catch(IOException e) {
+
+            System.out.println("Connection:"+e.getMessage());
+
+            }
+
+      }
+
+ 
+
+      public void run() {
+
+        try { // an echo server
+
+          //  String data = input.readUTF();
+
+                 
+
+              FileWriter out = new FileWriter("test.txt");
+
+              BufferedWriter bufWriter = new BufferedWriter(out);
+
+            
+
+              //Step 1 read length
+
+              int nb = input.readInt();
+              int sb = input.readInt();
+              
+              System.out.println("Read Length"+ nb);
+              System.out.println("Read second length"+ sb);
+
+
+              byte[] digit = new byte[nb];
+              byte[] digit2 = new byte[sb];
+              //Step 2 read byte
+
+               System.out.println("Writing.......");
+
+              for(int i = 0; i < nb; i++)
+
+                digit[i] = input.readByte();
+              for(int i = 0; i<sb;i++)
+              {
+            	  digit2[i] = input.readByte();
+              }
+
+               String st = new String(digit);
+              String strFilePath = path+st;
+              File file = new File(strFilePath);
+              if(!file.exists()){
+            	  file.createNewFile();
+              }
+              try
+              {
+            	  FileOutputStream fos = new FileOutputStream(strFilePath);
+            	  fos.write(digit2);
+            	  fos.close();
+              }
+              catch(FileNotFoundException ex)
+              {
+            	  System.out.println("FileNotFoundException: " + ex);
+              }
+              catch(IOException ioe)
+              {
+            	  System.out.println("IOException: " + ioe);
+              }
+               
+
+               String st2 = new String(digit2);
+
+              //Step 1 send length
+
+              output.writeInt(st.length());
+
+              //Step 2 send length
+          output.writeBytes(st); // UTF is a string encoding
+
+          //  output.writeUTF(data);
+
+            }
+
+            catch(EOFException e) {
+            System.out.println("EOF:"+e.getMessage()); }
+            catch(IOException e) {
+            System.out.println("IO:"+e.getMessage());} 
+
+    
+
+            finally {
+
+              try {
+
+                  clientSocket.close();
+
+              }
+
+              catch (IOException e){/*close failed*/}
+
+            }
+
+        }
+
+
+}

@@ -29,7 +29,12 @@ public class MsgDict {
 
 	public static final int FILELIST_REQUEST = 0X2000;
 	public static final int FILELIST_UPDATE = 0X2001;
-
+	
+	////////////////////////////////// TCP FILE TRANSFER 3/1/2012////////////////////////////////////////////////
+	public static final int FILETRANSFER_REQUEST = 0X2002;
+	public static final int FILETRANSFER_RECEIVED = 0X2003;
+	//////////////////////////////////TCP FILE TRANSFER 3/1/2012////////////////////////////////////////////////
+	
 	public static final int CHAT_REQUEST = 0X3000;
 
 	public static final int DES_UPDATE = 0X4000;

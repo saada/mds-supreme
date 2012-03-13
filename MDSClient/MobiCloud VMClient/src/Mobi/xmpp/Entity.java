@@ -10,28 +10,23 @@ public class Entity implements Serializable{
 	
 	public String e_id;	
 	public String e_owner;
-	public int e_shareby;
-	public int getE_shareby() {
-		return e_shareby;
-	}
-	public void setE_shareby(int e_shareby) {
-		this.e_shareby = e_shareby;
-	}
-
+	public int e_permission;
+	public String e_sharedBy;
 	public String e_name;
 	public Long e_size;
 	public String e_url;
 	public Date e_modate;
 	
 	public Entity(String e_id, String e_type, String e_name,
-			Long e_size, String e_url, Date e_modate, int e_shareby){
+			Long e_size, String e_url, Date e_modate, int permission, String sharedBy){
 		this.e_id = e_id;
 		this.e_type = e_type;
 		this.e_name = e_name;
 		this.e_size = e_size;
 		this.e_url = e_url; 
 		this.e_modate = e_modate;
-		this.e_shareby = e_shareby;
+		this.e_permission = permission;
+		this.e_sharedBy = sharedBy;
 	}
 	public Entity(String e_id, String e_type, String e_name
 			){
@@ -97,5 +92,22 @@ public class Entity implements Serializable{
 	public void setE_modate(Date e_modate) {
 		this.e_modate = e_modate;
 	}
-
+	
+	public int getE_permission() {
+		return e_permission;
+	}
+	
+	public void setE_permission(int permission) {
+		this.e_permission = permission;
+	}
+	
+	public String getE_sharedBy()
+	{
+		return this.e_sharedBy;
+	}
+	
+	public void setE_sharedBy(String sharedBy)
+	{
+		this.e_sharedBy = sharedBy;
+	}
 }

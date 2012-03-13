@@ -111,7 +111,7 @@ public class TreeGenerator {
 	{
 		//create mutable tree nodes
 		Date today = Calendar.getInstance().getTime();
-		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,1));
+		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,1,""));
 		Node node;
 		String prevUrl = "";
 		Entity entity;
@@ -125,7 +125,8 @@ public class TreeGenerator {
 			Date e_modate = set.getDate("e_modate");
 			
 			//store current set in an Entity data structure instance and add to tree
-			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, dao.getPermission(Integer.parseInt(e_id)));
+			System.out.println("&&"+dao.getSharedBy(Integer.parseInt(e_id)));
+			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, dao.getPermission(Integer.parseInt(e_id)),dao.getSharedBy(Integer.parseInt(e_id)));
 			node = new Node(entity);
 			if(root.isRoot())
 			{

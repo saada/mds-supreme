@@ -14,14 +14,17 @@ public class Main {
 	    DatabaseStarter dbStarter = new DatabaseStarter();
 	    dbStarter.getLocalTreeString();
 	    //dbStarter.getLocalTreeString("tom");
-		
 	/*###################################################
 	 *                   Messaging
 	 ###################################################*/
 		//send file list to another client
 		// declare variables
 		JabberAPI c = new JabberAPI(dbStarter);
-		c.dbStarter.dao.addAllUsers(c.getMyRoster());
+		//c.dbStarter.dao.addAllUsers(c.getMyRoster());
+		System.out.println(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString("tom"),"tom"));
+		//dbStarter.dao.updateEntityPermission(2, 1);
+		dbStarter.dao.updateUserPermission(2, "tom", 2);
+		//dbStarter.dao.updateUserPermission(4, "lin", 0);
 		for(RosterEntry r : c.getMyRoster())
 		{
 			System.out.println(r.getName());

@@ -31,7 +31,7 @@ public class MySQLAccess {
                 Class.forName("com.mysql.jdbc.Driver");
                 // Setup the connection with the DB
                 connect = DriverManager.getConnection("jdbc:mysql://localhost/mds_db?"
-                                                           + "user=root&password=saada");
+                                                           + "user=root&password=root");
         }
         
         public void createStmt() throws Exception {
@@ -263,19 +263,19 @@ public class MySQLAccess {
         	try {
                 //change entity permission
                 preparedStatement = connect
-                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
+                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?;");
                 preparedStatement.setInt(1, permission);
                 preparedStatement.setInt(2, e_id);
                 preparedStatement.executeUpdate();
 
                 //get specific entity to check if its type is directory
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?");
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?;");
         		preparedStatement.setInt(1, e_id);
                 preparedStatement.executeQuery();
                 ResultSet rs = preparedStatement.getResultSet();
                 
                 //get entire entity table to find sub-entities
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity");
+        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity;");
         		preparedStatement.executeQuery();
                 ResultSet sub_rs = preparedStatement.getResultSet();
                 
@@ -284,10 +284,10 @@ public class MySQLAccess {
                 {
                 	if(rs.getString("E_type").equals("dir"))
         			{
-                		String dir_url = rs.getString("E_url")+"/"+rs.getString("E_name")+"/";
+                		String dir_url = rs.getString("E_url")+rs.getString("E_name")+"/";
                 		while(sub_rs.next())
                 		{	
-                			if(sub_rs.getString("E_type").equals("dir"))
+                			if(sub_rs.getString("E_type").equals("dir") && sub_rs.getString("E_url").startsWith(dir_url))
                 			{
                 				updateEntityPermission(sub_rs.getInt("E_id"), permission);
                 			}
@@ -297,7 +297,7 @@ public class MySQLAccess {
 	                			if(sub_url.startsWith(dir_url))
 	                			{
 	                				preparedStatement = connect
-	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?)");
+	                                        .prepareStatement("UPDATE mds_db.T_UserPermit set UP_permission = ? where E_id = ?;");
 			                        preparedStatement.setInt(1, permission);
 			                        preparedStatement.setInt(2, sub_rs.getInt("E_id"));
 			                        preparedStatement.executeUpdate();
@@ -385,7 +385,7 @@ public class MySQLAccess {
                 		String dir_url = rs.getString("E_url")+rs.getString("E_name")+"/";
                 		while(sub_rs.next())
                 		{	
-                			if(sub_rs.getString("E_type").equals("dir"))
+                			if(sub_rs.getString("E_type").equals("dir") && sub_rs.getString("E_url").startsWith(dir_url))
                 			{
                 				updateUserPermission(sub_rs.getInt("E_id"), jid, permission);
                 			}
@@ -485,5 +485,33 @@ public class MySQLAccess {
 				};
 			}
 			return perm;
+		}
+
+		public String getSharedBy(int e_id) throws SQLException {
+			preparedStatement = connect.prepareStatement("select U_id from mds_db.T_UserPermit where E_id = ? and UP_permission = ?;");
+			preparedStatement.setInt(1, e_id);
+			preparedStatement.setInt(2, 1);
+			ResultSet result = preparedStatement.executeQuery();
+			result.last();
+			if(result.getRow() != 0)
+				return "PUBLIC";
+			
+			preparedStatement.setInt(2, 2);
+			result = preparedStatement.executeQuery();
+			result.last();
+			if(result.getRow() == 0)
+				return "PRIVATE";
+			
+			result.beforeFirst();
+			String str = "";
+			while(result.next())
+			{
+				if(result.isLast())
+					str += result.getString("U_id");
+				else
+					str += result.getString("U_id")+",";
+			}
+			return str;
+			
 		}
 }

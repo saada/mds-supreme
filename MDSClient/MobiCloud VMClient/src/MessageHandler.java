@@ -1,7 +1,4 @@
 
-import java.io.File; 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -87,6 +84,7 @@ public class MessageHandler extends Thread  {
 		// Log.i("DoWork: " + ((Message) p).getBody());
 		XMLParser parser;
 		try {
+			String from = p.getFrom(); System.out.println("FROM"+from);
 			parser = new XMLParser((Message) p);
 			ArrayList<Msg> msgs = new ArrayList<Msg>();
 			msgs = parser.getMsgList();
@@ -109,15 +107,15 @@ public class MessageHandler extends Thread  {
 						{
 							msgType = msg.type;
 							//check if the user requesting is owner
-							if(c.getConnection().getUser().split("/")[0].equals(msg.getAtr("jid")))
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
-								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),msg.getAtr("jid")));
+								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
 							}
 							else
 							{
 								outMessage.setTo(msg.getAtr("jid")+"/GoogleTV");
-								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(msg.getAtr("jid")),msg.getAtr("jid")));
+								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(from.split("@")[0]),from.split("@")[0]));
 							}
 							c.getConnection().sendPacket(outMessage);
 							break;
@@ -130,6 +128,18 @@ public class MessageHandler extends Thread  {
 								success = false;
 							break;
 						}
+////////////////////////////////TCP FILE TRANSFER 3/1/2012
+						case MsgDict.FILETRANSFER_REQUEST:
+						{							
+							c.sendFileTcp("", "");
+							break;
+						}
+						case MsgDict.FILETRANSFER_RECEIVED:
+						{							
+							c.receiveFileTcp("");
+							break;
+						}
+////////////////////////////////TCP FILE TRANSFER 3/1/2012
 					}
 				}
 			}

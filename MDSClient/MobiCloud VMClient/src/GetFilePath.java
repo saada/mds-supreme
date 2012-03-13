@@ -197,8 +197,8 @@ public class GetFilePath {
 		Date d = new Date(dir.lastModified());
 		long filesize = dir.length();
         long filesizeInKB = filesize / 1024;        
-
-		str += ", "+dir.getName()+ ", " +  filesizeInKB + "KB"+", "+dir.getParent()+"/, "+ d ;
+        String parent = dir.getParent().replace('\\', '/');
+		str += ", "+dir.getName()+ ", " +  filesizeInKB + "KB"+", "+parent+"/, "+ d ;
 		recordsList.add(str);
 		str = str.replace("\\", "\\\\");
 		writer.append(str + "\n");
