@@ -32,7 +32,7 @@ public class DatabaseStarter {
 			//clear and reset database
 			dao.deleteAll(table);
 			dao.resetAutoID(table);
-			//dao.deleteAll("T_UserPermit");
+			dao.deleteAll("T_UserPermit");
 			
 			//insert entities to database
 			for(int i=0; i< recordsList.size(); i++) {

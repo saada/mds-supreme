@@ -20,11 +20,8 @@ public class Main {
 		//send file list to another client
 		// declare variables
 		JabberAPI c = new JabberAPI(dbStarter);
-		//c.dbStarter.dao.addAllUsers(c.getMyRoster());
-		System.out.println(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString("tom"),"tom"));
-		//dbStarter.dao.updateEntityPermission(2, 1);
-		dbStarter.dao.updateUserPermission(2, "tom", 2);
-		//dbStarter.dao.updateUserPermission(4, "lin", 0);
+		c.dbStarter.dao.addAllUsers(c.getMyRoster());
+
 		for(RosterEntry r : c.getMyRoster())
 		{
 			System.out.println(r.getName());
