@@ -102,6 +102,30 @@ public class XMLParser {
 								 atr.put("permission",((Element)modlist.item(k)).getAttribute("permission"));
 								 msg.add(new Msg(MsgDict.USERPERMISSION_REQUEST, atr));
 							 }
+							 if(t.equals("rename"))
+							 {
+								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
+								 atr.put("newname", ((Element) modlist.item(k)).getAttribute("newname"));
+								 msg.add(new Msg(MsgDict.RENAME_REQUEST,atr));
+							 }
+							 if(t.equals("move"))
+							 {
+								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
+								 atr.put("newpath", ((Element) modlist.item(k)).getAttribute("newpath"));
+								 msg.add(new Msg(MsgDict.MOVE_REQUEST,atr));
+							 }
+							 if(t.equals("createDir"))
+							 {
+								 atr.put("name", ((Element) modlist.item(k)).getAttribute("name"));
+								 atr.put("url", ((Element) modlist.item(k)).getAttribute("url"));
+								 msg.add(new Msg(MsgDict.CREATEDIRECTORY_REQUEST,atr));
+							 }
+							 if(t.equals("delete"))
+							 {
+								 atr.put("e_id", ((Element) modlist.item(k)).getAttribute("e_id"));
+								 msg.add(new Msg(MsgDict.DELETE_REQUEST,atr));
+							 }
+							 
 						}
 					}
 					

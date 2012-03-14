@@ -307,12 +307,11 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 					"</modify></requests></MSG>";
 		}
 		//DELETE
-		public String createRequestDelete(String jid, int entityId)
+		public String createRequestDelete(int entityId)
 		{
 			return "<MSG><requests>" +
 					"<modify type = "+MsgDict.DELETE_REQUEST+">"
-						+"<delete jid=\""+jid
-						+"\" e_id=\""+ entityId 
+						+"<delete e_id=\""+ entityId 
 						+"\"></delete>" +
 					"</modify></requests></MSG>";
 		}

@@ -121,6 +121,23 @@ public class MessageHandler extends Thread  {
 								success = false;
 							break;
 						}
+						case MsgDict.RENAME_REQUEST:
+						{
+							
+							break;
+						}
+						case MsgDict.MOVE_REQUEST:
+						{
+							break;
+						}
+						case MsgDict.CREATEDIRECTORY_REQUEST:
+						{
+							break;
+						}
+						case MsgDict.DELETE_REQUEST:
+						{
+							break;
+						}
 ////////////////////////////////TCP FILE TRANSFER 3/1/2012
 						case MsgDict.FILETRANSFER_REQUEST:
 						{							

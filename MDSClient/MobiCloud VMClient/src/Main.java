@@ -29,7 +29,7 @@ public class Main {
 					+"\tGroups: "+r.getGroups()
 					+"\tStatus: "+r.getStatus()
 					+"\tType: "+r.getType()
-					);
+					+"\n");
 		}
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
