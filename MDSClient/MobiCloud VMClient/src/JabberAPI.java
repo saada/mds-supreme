@@ -6,7 +6,6 @@
 	 */
 
 
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -14,18 +13,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -41,7 +38,6 @@ import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
 import org.jivesoftware.smackx.filetransfer.FileTransferListener;
 import org.jivesoftware.smackx.filetransfer.FileTransferManager;
-import org.jivesoftware.smackx.filetransfer.FileTransferNegotiator;
 import org.jivesoftware.smackx.filetransfer.FileTransferRequest;
 import org.jivesoftware.smackx.filetransfer.IncomingFileTransfer;
 import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
@@ -189,11 +185,9 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 		public void displayBuddyList() {
 			Roster roster = connection.getRoster();
-	                roster.getEntry("colin");
 			entries = roster.getEntries();
 
 			System.out.println("\n\n" + entries.size() + " buddy(ies):");
-	                System.out.println("\n" + roster.getEntry("colin"));
 			for (RosterEntry r : entries) {
 				System.out.println(r.getName());
 			}
@@ -260,25 +254,9 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			return "<MSG><responses><download jid="+jid+">FILE WILL BE DOWNLOADED IN A MOMENT</download></responses></MSG>";
 		}
 		//</download>
-		//<delete>
-		public String createRequestDelete(String jid, int entityId)
-		{
-			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
-		}
-		public String createResponeDelete(String jid)
-		{
-			return "<MSG><responses><download jid="+jid+">FILE DELETED SUCCESSFULLY</download></responses></MSG>";
-		}
-		//</delete>
+		
 		//<modify>
-		public String createRequestModifyEntityName(int entityId, String newname)
-		{
-			return "<MSG><requests><modify<entityname e_id="+entityId+">"+ newname +"</entityname></modify></requests></MSG>";
-		}
-		public String createRequestModifyEntityLocation(int entityId, String newpath)
-		{
-			return "<MSG><requests><modify<entitylocation e_id="+entityId+">"+ newpath +"</entitylocation></modify></requests></MSG>";
-		}
+		//CHANGE PERMISSION
 		public String createRequestModifyUserPermission(ArrayList<Integer> entityIds, ArrayList<String> jids, int permission)
 		{
 			String str = "<MSG><requests>";
@@ -300,6 +278,45 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			 str+="</requests></MSG>";
 			 return str;
 		}
+		//RENAME
+		public String createRequestModifyEntityName(int entityId, String newname)
+		{
+			return "<MSG><requests><modify type = "+MsgDict.RENAME_REQUEST+">"
+						+"<rename e_id=\""+entityId
+						+"\" newname=\""+ newname 
+						+"\"></rename></modify></requests></MSG>";
+		}
+		//MOVE
+		public String createRequestModifyEntityLocation(int entityId, String newpath)
+		{
+			return "<MSG><requests>" +
+					"<modify type = "+MsgDict.MOVE_REQUEST+">"
+							+"<move e_id=\""+entityId
+							+"\" newpath=\""+ newpath 
+							+"\"></move>" +
+						"</modify></requests></MSG>";
+		}
+		//CREATE DIRECTORY
+		public String createRequestCreateDir(String name, String url)
+		{
+			return "<MSG><requests>" +
+					"<modify type = "+MsgDict.CREATEDIRECTORY_REQUEST+">"
+						+"<createDir name=\""+name
+						+"\" url=\""+ url 
+						+"\"></createDir>" +
+					"</modify></requests></MSG>";
+		}
+		//DELETE
+		public String createRequestDelete(String jid, int entityId)
+		{
+			return "<MSG><requests>" +
+					"<modify type = "+MsgDict.DELETE_REQUEST+">"
+						+"<delete jid=\""+jid
+						+"\" e_id=\""+ entityId 
+						+"\"></delete>" +
+					"</modify></requests></MSG>";
+		}
+		
 //		public String createRequestModifyGroupPermission(ArrayList<Integer> entityIds, ArrayList<String> gids, int permission)
 //		{
 //			String str = "<MSG><requests>";
@@ -321,6 +338,7 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 //			 str+="</requests></MSG>";
 //			 return str;
 //		}
+		//MODIFY RESPONSE
 		public String createResponseModify(boolean success)
 		{
 			if(success)
@@ -329,16 +347,6 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 				return "<MSG><responses><modify type=\""+MsgDict.REQUEST_FAILED+"\"></modify></responses></MSG>";
 		}
 		//</modify>
-		//<createDir>
-		public String createRequestCreateDir(String name, String url)
-		{
-			return "<MSG><requests><createDir url="+url+">"+name+"</createDir></requests></MSG>";
-		}
-		public String createResponseCreateDir(String name, String url)
-		{
-			return "<MSG><responses><createDir>DIRECTORY CREATED SUCCESSFULLY</createDir></responses></MSG>";
-		}
-		//</createDir>
 		
 ///////////////////////////////////////////////////////tcp file transfer send -- client
 		public void sendFileTcp(String ip, String filename){
@@ -520,14 +528,6 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
           //  String data = input.readUTF();
 
                  
-
-              FileWriter out = new FileWriter("test.txt");
-
-              BufferedWriter bufWriter = new BufferedWriter(out);
-
-            
-
-              //Step 1 read length
 
               int nb = input.readInt();
               int sb = input.readInt();

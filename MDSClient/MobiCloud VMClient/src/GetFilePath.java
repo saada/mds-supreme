@@ -1,25 +1,16 @@
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeModel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
- 
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+
 import org.xml.sax.SAXException;
 
 
@@ -28,8 +19,6 @@ public class GetFilePath {
 	static DataOutputStream out = null;
 	static BufferedWriter writer = null;
 	static ArrayList<String> recordsList;
-	private JTree tree;
-	
 	public GetFilePath() throws IOException {
 		fostream = new FileOutputStream(System.getProperty("user.home")+"/Desktop/format.txt");
 		out = new DataOutputStream(fostream);

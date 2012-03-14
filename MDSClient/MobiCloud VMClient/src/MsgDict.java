@@ -27,27 +27,37 @@ public class MsgDict {
 	public static final int C_ROSTER_UPDATED = 0x30;
 	public static final int S_RECEIVE_FILE = 0x33;
 
-	public static final int FILELIST_REQUEST = 0X2000;
-	public static final int FILELIST_UPDATE = 0X2001;
-	
-	////////////////////////////////// TCP FILE TRANSFER 3/1/2012////////////////////////////////////////////////
-	public static final int FILETRANSFER_REQUEST = 0X2002;
-	public static final int FILETRANSFER_RECEIVED = 0X2003;
-	//////////////////////////////////TCP FILE TRANSFER 3/1/2012////////////////////////////////////////////////
-	
 	public static final int CHAT_REQUEST = 0X3000;
 
 	public static final int DES_UPDATE = 0X4000;
 	
+	//Booleans for results of requests
 	public static final int REQUEST_FAILED = 0x7771;
 	public static final int REQUEST_SUCCESSFUL = 0x7772;
 	
+	//File List
+	public static final int FILELIST_REQUEST = 0X2000;
+	public static final int FILELIST_UPDATE = 0X2001;
+	
+	//TCP FILE TRANSFER 3/1/2012
+	public static final int FILETRANSFER_REQUEST = 0X2002;
+	public static final int FILETRANSFER_RECEIVED = 0X2003;
+	
 	//Access Control
 	public static final int USERPERMISSION_REQUEST = 0x51;
-	
 	public static final int PRIVATE = 0x5550;
 	public static final int PUBLIC = 0x5551;
 	public static final int SHARED = 0x5552;
+
+	//Rename
+	public static final int RENAME_REQUEST = 0x2004;
+	//Move
+	public static final int MOVE_REQUEST = 0x2005;
+	//Create Directory
+	public static final int CREATEDIRECTORY_REQUEST = 0x2006;
+	//Delete
+	public static final int DELETE_REQUEST = 0x2007;
+	
 	
 
 	

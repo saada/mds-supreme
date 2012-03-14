@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,9 +21,7 @@ public class XMLParser {
 	private DocumentBuilderFactory dbf;
 	private DocumentBuilder db;
 	private NodeList nl;
-	private int type;
 	private Hashtable<String, String> atr;
-	private String data;
 	private ArrayList<Msg> msg;
 	private String from;
 

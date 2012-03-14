@@ -3,16 +3,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 
-import javax.xml.parsers.ParserConfigurationException;
-
-//import log.Log;
-
-import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.packet.Message;
-import org.jivesoftware.smack.packet.Message.Type;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
-import org.xml.sax.SAXException;
+import org.jivesoftware.smack.packet.Message.Type;
 
 
 

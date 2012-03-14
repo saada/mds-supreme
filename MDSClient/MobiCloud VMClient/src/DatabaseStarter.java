@@ -1,13 +1,6 @@
 import java.io.File;
-import java.io.IOException;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-
-import org.xml.sax.SAXException;
 
 
 public class DatabaseStarter {
@@ -64,7 +57,7 @@ public class DatabaseStarter {
 		TreeGenerator myTree = new TreeGenerator();
 		try {
 			ResultSet rs = dao.selectAll(table);
-			myTree.generate(dao.selectAll(table),dao);
+			myTree.generate(rs,dao);
 			String treeString = Serialization.toString(myTree.root);
 			System.out.println(treeString);
 			return treeString;

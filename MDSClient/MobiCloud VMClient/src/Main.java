@@ -21,10 +21,15 @@ public class Main {
 		// declare variables
 		JabberAPI c = new JabberAPI(dbStarter);
 		c.dbStarter.dao.addAllUsers(c.getMyRoster());
-
 		for(RosterEntry r : c.getMyRoster())
 		{
-			System.out.println(r.getName());
+			System.out.print("Name: "+r.getName()
+					+"\tUser: "+r.getUser()
+					+"\tClass: "+r.getClass()
+					+"\tGroups: "+r.getGroups()
+					+"\tStatus: "+r.getStatus()
+					+"\tType: "+r.getType()
+					);
 		}
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
