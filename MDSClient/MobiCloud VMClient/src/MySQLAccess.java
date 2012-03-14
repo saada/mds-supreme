@@ -93,6 +93,7 @@ public class MySQLAccess {
                                         .prepareStatement("delete from mds_db." + table + " ; ");
                         preparedStatement.executeUpdate();
                 } catch (Exception e) {
+                	e.printStackTrace();
                         throw e;
                 }
         }
@@ -514,6 +515,16 @@ public class MySQLAccess {
 				else
 					str += result.getString("U_id")+",";
 			}
+			return str;
+			
+		}
+		//get path and name as a String array where index 0 has the path and index 1 has the entity name
+		public String[] getEntityPathAndName(int e_id) throws SQLException {
+			preparedStatement = connect.prepareStatement("select E_url, E_name from mds_db.T_Entity where E_id = ?;");
+			preparedStatement.setInt(1, e_id);
+			ResultSet result = preparedStatement.executeQuery();
+			result.next();
+			String[] str = {result.getString("E_url"), result.getString("E_name")};
 			return str;
 			
 		}

@@ -13,7 +13,6 @@ public class Main {
 	    
 	    DatabaseStarter dbStarter = new DatabaseStarter();
 	    dbStarter.getLocalTreeString();
-	    //dbStarter.getLocalTreeString("tom");
 	/*###################################################
 	 *                   Messaging
 	 ###################################################*/
@@ -31,20 +30,12 @@ public class Main {
 					+"\tType: "+r.getType()
 					+"\n");
 		}
-		
+		c.dbStarter.renameEntity(2, "OH LAHOO");
+		//c.dbStarter.dao.deleteAll("T_Entity");
+	    c.dbStarter.getLocalTreeString();
+	    
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
-
-//		FileInputStream fistream1 = new FileInputStream("/home/saada/Desktop/test.xml");
-//		DataInputStream in1 = new DataInputStream(fistream1);
-//		BufferedReader reader1 = new BufferedReader(new InputStreamReader(in1));
-//
-//		String temp = "";
-//		while((temp = reader1.readLine()) != null) {
-//			msg += temp;
-//		}
-//		reader1.close();
-//		msg += "</root>\n";
 		
 		String yesorno = "NO";
 		

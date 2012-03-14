@@ -87,9 +87,11 @@ public class MessageHandler extends Thread  {
 			for(Msg msg : msgs){
 				if(msg!=null)
 				{
+					msgType = msg.type;
 					outMessage = new Message();
 					outMessage.setType(Type.normal);
 					outMessage.setFrom(c.getConnection().getUser());
+					outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 					switch (msg.type) {
 						default:
 						{
@@ -98,16 +100,13 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.FILELIST_REQUEST:
 						{
-							msgType = msg.type;
 							//check if the user requesting is owner
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
-								outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
 							}
 							else
 							{
-								outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 								outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(from.split("@")[0]),from.split("@")[0]));
 							}
 							c.getConnection().sendPacket(outMessage);
@@ -115,7 +114,6 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.USERPERMISSION_REQUEST:
 						{
-							msgType = msg.type;
 							if(!(dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
 											Integer.parseInt(msg.getAtr("permission")))))
 								success = false;
@@ -123,7 +121,11 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.RENAME_REQUEST:
 						{
-							
+							//return true if successfully renamed entity
+							outMessage.setBody(c.createResponseModify(
+									dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
+							);
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 						case MsgDict.MOVE_REQUEST:
@@ -155,7 +157,6 @@ public class MessageHandler extends Thread  {
 			}
 			if(msgType == MsgDict.USERPERMISSION_REQUEST)
 			{
-				outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 				outMessage.setBody(c.createResponseModify(success));
 				c.getConnection().sendPacket(outMessage);
 			}

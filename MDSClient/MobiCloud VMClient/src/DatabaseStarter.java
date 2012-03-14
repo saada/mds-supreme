@@ -1,41 +1,33 @@
 import java.io.File;
+import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
+import org.xml.sax.SAXException;
 
 
 public class DatabaseStarter {
 	MySQLAccess dao;
 	String table = "T_Entity";
+	GetFilePath filePath;
+	File homeDir;
 	DatabaseStarter()
 	{
 		/*	BEGIN DATABASE INIALIZATION  */
 		//get list of files in this local directory
-		GetFilePath filePath;
 		try {
-			filePath = new GetFilePath();
-			File dir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
-			filePath.visitAllDirsAndFiles(dir);
-			//pass recordslist to a local arraylist
-			ArrayList<String> recordsList = new ArrayList<String>();
-			recordsList.addAll(filePath.getRecordsList());
-			
-			//Access Database
+			//Init Database, filePath and home directory
 			dao = new MySQLAccess();
+			filePath = new GetFilePath();
+			homeDir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
 			
-			//clear and reset database
-			dao.deleteAll(table);
-			dao.resetAutoID(table);
 			dao.deleteAll("T_UserPermit");
-			
-			//insert entities to database
-			for(int i=0; i< recordsList.size(); i++) {
-				System.out.println("RECORD["+i+"] = "+recordsList.get(i));
-				dao.insertEntity(recordsList.get(i));
-			}
-			//print on console for testing
-			dao.writeResultSet(dao.selectAll(table));
-			
-
+			//initialize entity table
+			resetDB();
 			
 		/*	END OF DATABASE INIALIZATION  */
 		} catch (Exception e) {
@@ -49,6 +41,25 @@ public class DatabaseStarter {
 	public void close()
 	{
 		dao.close();
+	}
+	public void resetDB() throws Exception
+	{
+		filePath.visitAllDirsAndFiles(homeDir);
+		//pass recordslist to a local arraylist
+		ArrayList<String> recordsList = new ArrayList<String>();
+		recordsList.addAll(filePath.getRecordsList());
+
+		//clear and reset database
+		dao.deleteAll(table);
+		dao.resetAutoID(table);
+		
+		//insert entities to database
+		for(int i=0; i< recordsList.size(); i++) {
+			System.out.println("RECORD["+i+"] = "+recordsList.get(i));
+			dao.insertEntity(recordsList.get(i));
+		}
+		//print on console for testing
+		dao.writeResultSet(dao.selectAll(table));
 	}
 	public String getLocalTreeString()
 	{
@@ -80,6 +91,31 @@ public class DatabaseStarter {
 	}
 	public boolean updateUserPermission(int e_id, String jid, int permission) throws Exception {
 		return dao.updateUserPermission(e_id, jid, permission);
+	}
+	public boolean renameEntity(int e_id, String newname) throws Exception
+	{
+		if(e_id == 1) return false;	//cannot rename default VM folder
+		// File (or directory) with old name
+		String[] str = dao.getEntityPathAndName(e_id);
+		File file = new File(str[0]+str[1]);
+
+		// File (or directory) with new name
+		File file2 = new File(str[0]+newname);
+
+		// Rename file (or directory)
+		boolean success = file.renameTo(file2);
+		if(success)
+		{
+			resetDB();
+			System.out.println("Rename Successful!");
+			return true;
+		}
+		else
+		{
+			System.out.println("Rename Failed!");
+			return false;
+		}
+		
 	}
 	
 }
