@@ -31,7 +31,6 @@ public class DatabaseStarter {
 			
 		/*	END OF DATABASE INIALIZATION  */
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -106,16 +105,42 @@ public class DatabaseStarter {
 		boolean success = file.renameTo(file2);
 		if(success)
 		{
-			resetDB();
-			System.out.println("Rename Successful!");
+			dao.updateEntityName(e_id, newname);
+			System.out.println("\t###Rename Successful!");
 			return true;
 		}
 		else
 		{
-			System.out.println("Rename Failed!");
+			System.out.println("\t###Rename Failed!");
 			return false;
 		}
 		
+	}
+	public boolean moveEntity(int e_id, String newpath) throws Exception {
+		// TODO Auto-generated method stub
+		if(e_id == 1) return false;
+		//move physical entity
+		String[] str = dao.getEntityPathAndName(e_id);
+		
+		// File (or directory) to be moved
+		File file = new File(str[0]+str[1]);
+		 
+		// Destination directory
+		File dir = new File(newpath);
+		 
+		// Move file to new directory
+		boolean success = file.renameTo(new File(dir, file.getName()));
+		if (!success) {
+		    // File was not successfully moved
+			System.out.println("\t###Move Failed!");
+			return false;
+		}
+		else
+		{
+			dao.updateEntityLocation(e_id, newpath);
+			System.out.println("\t###Move Successful!");
+			return true;
+		}
 	}
 	
 }

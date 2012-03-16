@@ -528,4 +528,46 @@ public class MySQLAccess {
 			return str;
 			
 		}
+		public void updatePaths(String prevUrl, String newUrl) throws SQLException{
+			//rename all urls
+			preparedStatement = connect.prepareStatement("SELECT E_url, E_id from mds_db.T_Entity;");
+			ResultSet set = preparedStatement.executeQuery();
+			
+			while (set.next())
+			{
+				String str1 = set.getString("E_url");
+				int id = set.getInt("E_id");
+				if(str1.startsWith(prevUrl))
+				{
+					str1 = str1.replace(prevUrl, newUrl);
+					preparedStatement = connect.prepareStatement("UPDATE mds_db.T_Entity set E_url = ? where E_id = ?;");
+					preparedStatement.setString(1, str1);
+					preparedStatement.setInt(2, id);
+					preparedStatement.executeUpdate();
+				}
+			}
+		}
+		public void updateEntityName(int e_id, String newname) throws SQLException {
+			//get previous url and name
+			String str[] = getEntityPathAndName(e_id);
+			String prevUrl = str[0];
+			String prevName = str[1];
+			
+			//rename the entity name
+			preparedStatement = connect.prepareStatement("UPDATE mds_db.T_Entity set E_name = ? where E_id = ?;");
+			preparedStatement.setString(1, newname);
+			preparedStatement.setInt(2, e_id);
+			preparedStatement.executeUpdate();
+			
+			updatePaths(prevUrl+prevName, prevUrl+newname);
+		}
+
+		public void updateEntityLocation(int e_id, String newpath) throws SQLException {
+			// TODO figure this out!
+			//get previous url and name
+			String str[] = getEntityPathAndName(e_id);
+			String prevUrl = str[0];
+			
+			updatePaths(prevUrl, newpath);
+		}
 }

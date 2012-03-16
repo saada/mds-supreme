@@ -126,18 +126,38 @@ public class MessageHandler extends Thread  {
 									dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
 							);
 							c.getConnection().sendPacket(outMessage);
+							
+							//update tree
+							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 						case MsgDict.MOVE_REQUEST:
 						{
+							//return true if successfully renamed entity
+							outMessage.setBody(c.createResponseModify(
+									dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")))
+							);
+							c.getConnection().sendPacket(outMessage);
+							
+							//update tree
+							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 						case MsgDict.CREATEDIRECTORY_REQUEST:
 						{
+							
+							//update tree
+							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 						case MsgDict.DELETE_REQUEST:
 						{
+							//update tree
+							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 ////////////////////////////////TCP FILE TRANSFER 3/1/2012
