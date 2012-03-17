@@ -109,55 +109,70 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.USERPERMISSION_REQUEST:
 						{
-							if(!(dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
-											Integer.parseInt(msg.getAtr("permission")))))
-								success = false;
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								if(!(dbStarter.updateUserPermission(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("jid"),
+												Integer.parseInt(msg.getAtr("permission")))))
+									success = false;
+							}
 							break;
 						}
 						case MsgDict.RENAME_REQUEST:
 						{
-							//return true if successfully renamed entity
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
-							);
-							c.getConnection().sendPacket(outMessage);
-							
-							//update tree in all devices (resources)
-							updateAllOwners(from);
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								//return true if successfully renamed entity
+								outMessage.setBody(c.createResponseModify(
+										dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
+								);
+								c.getConnection().sendPacket(outMessage);
+								
+								//update tree in all devices (resources)
+								updateAllOwners(from);
+							}
 							break;
 						}
 						case MsgDict.MOVE_REQUEST:
 						{
-							//return true if successfully moved entity
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")))
-							);
-							c.getConnection().sendPacket(outMessage);
-							
-							//update tree
-							updateAllOwners(from);
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								//return true if successfully moved entity
+								outMessage.setBody(c.createResponseModify(
+										dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")))
+								);
+								c.getConnection().sendPacket(outMessage);
+								
+								//update tree
+								updateAllOwners(from);
+							}
 							break;
 						}
 						case MsgDict.CREATEDIRECTORY_REQUEST:
 						{
-							//return true if successfully created directory
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")))
-							);
-							c.getConnection().sendPacket(outMessage);
-							//update tree
-							updateAllOwners(from);
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								//return true if successfully created directory
+								outMessage.setBody(c.createResponseModify(
+										dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")))
+								);
+								c.getConnection().sendPacket(outMessage);
+								//update tree
+								updateAllOwners(from);
+							}
 							break;
 						}
 						case MsgDict.DELETE_REQUEST:
 						{
-							//return true if successfully deleted entity
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))))
-							);
-							c.getConnection().sendPacket(outMessage);
-							//update tree
-							updateAllOwners(from);
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								//return true if successfully deleted entity
+								outMessage.setBody(c.createResponseModify(
+										dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))))
+								);
+								c.getConnection().sendPacket(outMessage);
+								//update tree
+								updateAllOwners(from);
+							}
 							break;
 						}
 ////////////////////////////////TCP FILE TRANSFER 3/1/2012
