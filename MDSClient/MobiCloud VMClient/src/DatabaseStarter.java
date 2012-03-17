@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -118,7 +119,6 @@ public class DatabaseStarter {
 		
 	}
 	public boolean moveEntity(int e_id, String newpath) throws Exception {
-		// TODO Auto-generated method stub
 		if(e_id == 1) return false;
 		//move physical entity
 		String[] str = dao.getEntityPathAndName(e_id);
@@ -144,7 +144,6 @@ public class DatabaseStarter {
 		}
 	}
 	public boolean deleteEntity(int e_id) throws SQLException {
-		// TODO complete
 		String[] str = dao.getEntityPathAndName(e_id);
 		String type = dao.getEntityType(e_id);
 		File f1 = new File(str[0]+str[1]);
@@ -173,6 +172,25 @@ public class DatabaseStarter {
 				System.out.println("\t###File deleted.");
 				return true;
 			}
+		}
+	}
+	public boolean createDirectory(String name, String url) throws Exception {
+		// TODO Auto-generated method stub
+		String strDirectory = url+name;
+		// Create one directory
+		boolean success = (
+		new File(strDirectory)).mkdir();
+		if (success) {
+			java.util.Date date = new Date();
+			java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+			String record = "dir, "+name+", "+0+"KB, "+url+", "+sqlDate;
+			dao.insertEntity(record);
+			System.out.println("Directory: " + strDirectory + " created");
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 	

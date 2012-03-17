@@ -30,7 +30,6 @@ public class Main {
 					+"\tType: "+r.getType()
 					+"\n");
 		}
-		dbStarter.deleteEntity(2);
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
 		

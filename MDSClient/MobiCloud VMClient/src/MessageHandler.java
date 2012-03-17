@@ -93,11 +93,6 @@ public class MessageHandler extends Thread  {
 					outMessage.setFrom(c.getConnection().getUser());
 					outMessage.setTo(from.split("/")[0]+"/GoogleTV");
 					switch (msg.type) {
-						default:
-						{
-							System.out.println("MSG TYPE= "+msg.type);
-							
-						}
 						case MsgDict.FILELIST_REQUEST:
 						{
 							//check if the user requesting is owner
@@ -128,29 +123,30 @@ public class MessageHandler extends Thread  {
 							c.getConnection().sendPacket(outMessage);
 							
 							//update tree in all devices (resources)
-							outMessage.setTo(from.split("/")[0]);
-							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
-							c.getConnection().sendPacket(outMessage);
+							updateAllOwners(from);
 							break;
 						}
 						case MsgDict.MOVE_REQUEST:
 						{
-							//return true if successfully renamed entity
+							//return true if successfully moved entity
 							outMessage.setBody(c.createResponseModify(
 									dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")))
 							);
 							c.getConnection().sendPacket(outMessage);
 							
 							//update tree
-							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
-							c.getConnection().sendPacket(outMessage);
+							updateAllOwners(from);
 							break;
 						}
 						case MsgDict.CREATEDIRECTORY_REQUEST:
 						{
-							//update tree
-							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
+							//return true if successfully created directory
+							outMessage.setBody(c.createResponseModify(
+									dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")))
+							);
 							c.getConnection().sendPacket(outMessage);
+							//update tree
+							updateAllOwners(from);
 							break;
 						}
 						case MsgDict.DELETE_REQUEST:
@@ -161,8 +157,7 @@ public class MessageHandler extends Thread  {
 							);
 							c.getConnection().sendPacket(outMessage);
 							//update tree
-							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
-							c.getConnection().sendPacket(outMessage);
+							updateAllOwners(from);
 							break;
 						}
 ////////////////////////////////TCP FILE TRANSFER 3/1/2012
@@ -193,7 +188,15 @@ public class MessageHandler extends Thread  {
 		
 		
 	}
-
+	public void updateAllOwners(String owner)
+	{
+		Message outMessage = new Message();
+		outMessage.setType(Type.normal);
+		outMessage.setFrom(c.getConnection().getUser());
+		outMessage.setTo(owner.split("/")[0]);
+		outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),owner.split("@")[0]));
+		c.getConnection().sendPacket(outMessage);
+	}
 	public void add(Packet msg) {
 		synchronized (msgs_) {
 			msgs_.add(msg);
