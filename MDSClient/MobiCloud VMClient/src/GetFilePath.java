@@ -183,7 +183,7 @@ public class GetFilePath {
 			
 		}	
 		
-		Date d = new Date(dir.lastModified());System.out.println("DATE = "+d);
+		Date d = new Date(dir.lastModified());
 		long filesize = dir.length();
         long filesizeInKB = filesize / 1024;        
         String parent = dir.getParent().replace('\\', '/');
