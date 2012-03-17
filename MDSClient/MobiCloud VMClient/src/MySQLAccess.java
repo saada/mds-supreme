@@ -547,6 +547,16 @@ public class MySQLAccess {
 				}
 			}
 		}
+		
+		public String getEntityType(int e_id) throws SQLException
+		{
+			preparedStatement = connect.prepareStatement("Select E_type from mds_db.T_Entity where E_id = ?;");
+			preparedStatement.setInt(1, e_id);
+			ResultSet set = preparedStatement.executeQuery();
+			set.first();
+			return set.getString("E_type");
+		}
+		
 		public void updateEntityName(int e_id, String newname) throws SQLException {
 			//get previous url and name
 			String str[] = getEntityPathAndName(e_id);
@@ -563,11 +573,60 @@ public class MySQLAccess {
 		}
 
 		public void updateEntityLocation(int e_id, String newpath) throws SQLException {
-			// TODO figure this out!
 			//get previous url and name
 			String str[] = getEntityPathAndName(e_id);
 			String prevUrl = str[0];
+			String name = str[1];
 			
-			updatePaths(prevUrl, newpath);
+			String type = getEntityType(e_id);
+			if(type.equals("file"))
+			{
+				preparedStatement = connect.prepareStatement("UPDATE mds_db.T_Entity set E_url = ? where E_id = ?;");
+				preparedStatement.setString(1, newpath);
+				preparedStatement.setInt(2, e_id);
+				preparedStatement.executeUpdate();
+			}
+			else
+			{
+				preparedStatement = connect.prepareStatement("UPDATE mds_db.T_Entity set E_url = ? where E_id = ?;");
+				preparedStatement.setString(1, newpath);
+				preparedStatement.setInt(2, e_id);
+				preparedStatement.executeUpdate();
+				updatePaths(prevUrl+name, newpath+name);
+			}
+		}
+
+		public void deleteEntity(int e_id) throws SQLException {
+			String str[] = getEntityPathAndName(e_id);
+			String prevUrl = str[0];
+			String name = str[1];
+			
+			String type = getEntityType(e_id);
+			
+			//delete entity first whether directory or file
+			preparedStatement = connect.prepareStatement("DELETE FROM mds_db.T_Entity where E_id = ?;");
+			preparedStatement.setInt(1, e_id);
+			preparedStatement.executeUpdate();
+			preparedStatement = connect.prepareStatement("DELETE FROM mds_db.T_UserPermit where E_id = ?;");
+			preparedStatement.setInt(1, e_id);
+			preparedStatement.executeUpdate();
+			
+			if(type.equals("dir")) //delete sub-entities
+			{
+				preparedStatement = connect.prepareStatement("Select E_url, E_id FROM mds_db.T_Entity;");
+				ResultSet set = preparedStatement.executeQuery();
+				while(set.next())
+				{
+					if(set.getString("E_url").startsWith(prevUrl+name))
+					{
+						preparedStatement = connect.prepareStatement("DELETE FROM mds_db.T_Entity where E_id = ?;");
+						preparedStatement.setInt(1, set.getInt("E_id"));
+						preparedStatement.executeUpdate();
+						preparedStatement = connect.prepareStatement("DELETE FROM mds_db.T_UserPermit where E_id = ?;");
+						preparedStatement.setInt(1, set.getInt("E_id"));
+						preparedStatement.executeUpdate();
+					}
+				}
+			}
 		}
 }

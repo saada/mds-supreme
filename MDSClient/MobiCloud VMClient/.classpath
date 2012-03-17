@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="C:/Users/SAADA/workspace/MobiCloud VMClient/smackx.jar"/>
 	<classpathentry kind="lib" path="C:/Users/SAADA/workspace/MobiCloud VMClient/smackx-debug.jar"/>
 	<classpathentry kind="lib" path="C:/Users/SAADA/workspace/MobiCloud VMClient/smackx-jingle.jar"/>
+	<classpathentry kind="lib" path="C:/Users/SAADA/workspace/MobiCloud VMClient/commons-io-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

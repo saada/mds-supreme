@@ -148,11 +148,6 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.CREATEDIRECTORY_REQUEST:
 						{
-							//return true if successfully deleted entity
-							outMessage.setBody(c.createResponseModify(
-									dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
-							);
-							c.getConnection().sendPacket(outMessage);
 							//update tree
 							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
 							c.getConnection().sendPacket(outMessage);
@@ -160,7 +155,11 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.DELETE_REQUEST:
 						{
-							
+							//return true if successfully deleted entity
+							outMessage.setBody(c.createResponseModify(
+									dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))))
+							);
+							c.getConnection().sendPacket(outMessage);
 							//update tree
 							outMessage.setBody(c.createResponseDirectoryMessage(dbStarter.getLocalTreeString(),from.split("@")[0]));
 							c.getConnection().sendPacket(outMessage);
@@ -183,7 +182,7 @@ public class MessageHandler extends Thread  {
 			}
 			if(msgType == MsgDict.USERPERMISSION_REQUEST)
 			{
-				outMessage.setBody(c.createChangePermissionResponse(success));
+				outMessage.setBody(c.createResponseModify(success));
 				c.getConnection().sendPacket(outMessage);
 			}
 		}

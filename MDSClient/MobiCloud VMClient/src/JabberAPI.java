@@ -345,14 +345,6 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			else
 				return "<MSG><responses><modify type=\""+MsgDict.REQUEST_FAILED+"\"></modify></responses></MSG>";
 		}
-		//Change permission response
-		public String createChangePermissionResponse(boolean success)
-		{
-			if(success)
-				return "<MSG><responses><modify><user_permission type=\""+MsgDict.REQUEST_SUCCESSFUL+"\"></user_permission></modify></responses></MSG>";
-			else
-				return "<MSG><responses><modify><user_permission type=\""+MsgDict.REQUEST_FAILED+"\"></user_permission></modify></responses></MSG>";
-		}
 		//</modify>
 		
 ///////////////////////////////////////////////////////tcp file transfer send -- client

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 
@@ -140,6 +141,38 @@ public class DatabaseStarter {
 			dao.updateEntityLocation(e_id, newpath);
 			System.out.println("\t###Move Successful!");
 			return true;
+		}
+	}
+	public boolean deleteEntity(int e_id) throws SQLException {
+		// TODO complete
+		String[] str = dao.getEntityPathAndName(e_id);
+		String type = dao.getEntityType(e_id);
+		File f1 = new File(str[0]+str[1]);
+		if(type.equals("dir"))
+		{
+			try {
+				FileUtils.deleteDirectory(f1);
+				dao.deleteEntity(e_id);
+				System.out.println("\t###Folder deleted.");
+				return true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("\t###Deletion failed.");
+				return false;
+			}
+		}
+		else
+		{
+			boolean success = f1.delete();
+			if (!success){
+				System.out.println("\t###Deletion failed.");
+				return false;
+			}
+			else{
+				dao.deleteEntity(e_id);
+				System.out.println("\t###File deleted.");
+				return true;
+			}
 		}
 	}
 	
