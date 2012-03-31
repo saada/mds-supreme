@@ -44,7 +44,9 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 
 	public class JabberAPI implements MessageListener {
 		XMPPConnection connection;
-
+		Upload_Acc accUpload;
+		CS_FileTransfer filetransfer1;
+		CS_FileTransfer filetransfer2;
 		Collection<RosterEntry> entries;
 		PacketTypeFilter filter = new PacketTypeFilter(Message.class);
 		MessageHandler mHandler;
@@ -399,22 +401,22 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		//</modify>
 /////////////////////////////////////download		
 		public void acceptStart(String domain, int port, String path) throws IOException {
-			CS_FileTransfer filetransfer = new CS_FileTransfer(port,path);
-			filetransfer.setDomain(domain);
-			Thread Acc_thread = new Thread(filetransfer);
+			filetransfer1 = new CS_FileTransfer(port,path);
+			filetransfer1.setDomain(domain);
+			Thread Acc_thread = new Thread(filetransfer1);
 			Acc_thread.start();
 		}
 	
 		public boolean invokeToVM(String domain, int port, String path) throws IOException{
-			CS_FileTransfer filetransfer = new CS_FileTransfer(port,path);
-			filetransfer.setDomain(domain);
-			return filetransfer.invoke(true);
+			filetransfer2 = new CS_FileTransfer(port,path);
+			filetransfer2.setDomain(domain);
+			return filetransfer2.invoke(true);
 			
 		}
 	
 	//////////////////////////////////////uploadfileFromClient
 		public boolean acceptUpload(String filename, String path) throws IOException{
-			Upload_Acc accUpload =  new Upload_Acc(path, filename);
+			accUpload =  new Upload_Acc(path, filename);
 			accUpload.start();
 			if(accUpload.isAlive())
 			{

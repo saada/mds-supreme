@@ -32,7 +32,7 @@ public class Main {
 		}
 		
 		//Initialize file transfer thread pool
-		c.acceptStart("", 6880, "");
+		c.acceptStart("", 6881, "");
 		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
