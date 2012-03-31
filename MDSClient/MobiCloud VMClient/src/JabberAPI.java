@@ -338,12 +338,47 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 //			 return str;
 //		}
 		//MODIFY RESPONSE
-		public String createResponseModify(boolean success)
+		public String createResponseModify(boolean success, int requestType)
 		{
-			if(success)
-				return "<MSG><responses><modify type=\""+MsgDict.REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
-			else
-				return "<MSG><responses><modify type=\""+MsgDict.REQUEST_FAILED+"\"></modify></responses></MSG>";
+			switch(requestType)
+			{
+				case MsgDict.USERPERMISSION_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><modify type=\""+MsgDict.USERPERMISSION_REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
+					else
+						return "<MSG><responses><modify type=\""+MsgDict.USERPERMISSION_REQUEST_FAILED+"\"></modify></responses></MSG>";
+				}
+				case MsgDict.RENAME_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><modify type=\""+MsgDict.RENAME_REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
+					else
+						return "<MSG><responses><modify type=\""+MsgDict.RENAME_REQUEST_FAILED+"\"></modify></responses></MSG>";
+				}
+				case MsgDict.DELETE_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><modify type=\""+MsgDict.DELETE_REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
+					else
+						return "<MSG><responses><modify type=\""+MsgDict.DELETE_REQUEST_FAILED+"\"></modify></responses></MSG>";
+				}
+				case MsgDict.CREATEDIRECTORY_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><modify type=\""+MsgDict.CREATEDIRECTORY_REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
+					else
+						return "<MSG><responses><modify type=\""+MsgDict.CREATEDIRECTORY_REQUEST_FAILED+"\"></modify></responses></MSG>";
+				}
+				case MsgDict.MOVE_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><modify type=\""+MsgDict.MOVE_REQUEST_SUCCESSFUL+"\"></modify></responses></MSG>";
+					else
+						return "<MSG><responses><modify type=\""+MsgDict.MOVE_REQUEST_FAILED+"\"></modify></responses></MSG>";
+				}
+			}
+			return null;
 		}
 		//</modify>
 		

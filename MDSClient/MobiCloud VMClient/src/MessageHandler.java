@@ -123,7 +123,7 @@ public class MessageHandler extends Thread  {
 							{
 								//return true if successfully renamed entity
 								outMessage.setBody(c.createResponseModify(
-										dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")))
+										dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
 								
@@ -138,7 +138,7 @@ public class MessageHandler extends Thread  {
 							{
 								//return true if successfully moved entity
 								outMessage.setBody(c.createResponseModify(
-										dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")))
+										dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
 								
@@ -153,7 +153,7 @@ public class MessageHandler extends Thread  {
 							{
 								//return true if successfully created directory
 								outMessage.setBody(c.createResponseModify(
-										dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")))
+										dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
 								//update tree
@@ -167,7 +167,7 @@ public class MessageHandler extends Thread  {
 							{
 								//return true if successfully deleted entity
 								outMessage.setBody(c.createResponseModify(
-										dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))))
+										dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
 								//update tree
@@ -192,7 +192,7 @@ public class MessageHandler extends Thread  {
 			}
 			if(msgType == MsgDict.USERPERMISSION_REQUEST)
 			{
-				outMessage.setBody(c.createResponseModify(success));
+				outMessage.setBody(c.createResponseModify(success,msgType));
 				c.getConnection().sendPacket(outMessage);
 			}
 		}

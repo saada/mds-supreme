@@ -45,18 +45,29 @@ public class MsgDict {
 	
 	//Access Control
 	public static final int USERPERMISSION_REQUEST = 0x51;
+	public static final int USERPERMISSION_REQUEST_SUCCESSFUL = 0x52;
+	public static final int USERPERMISSION_REQUEST_FAILED = 0x53;
+	
 	public static final int PRIVATE = 0x5550;
 	public static final int PUBLIC = 0x5551;
 	public static final int SHARED = 0x5552;
 
 	//Rename
 	public static final int RENAME_REQUEST = 0x2004;
+	public static final int RENAME_REQUEST_SUCCESSFUL = 0x3004;
+	public static final int RENAME_REQUEST_FAILED = 0x4004;
 	//Move
 	public static final int MOVE_REQUEST = 0x2005;
+	public static final int MOVE_REQUEST_SUCCESSFUL = 0x3005;
+	public static final int MOVE_REQUEST_FAILED = 0x4005;
 	//Create Directory
 	public static final int CREATEDIRECTORY_REQUEST = 0x2006;
+	public static final int CREATEDIRECTORY_REQUEST_SUCCESSFUL = 0x3006;
+	public static final int CREATEDIRECTORY_REQUEST_FAILED = 0x4006;
 	//Delete
 	public static final int DELETE_REQUEST = 0x2007;
+	public static final int DELETE_REQUEST_SUCCESSFUL = 0x3007;
+	public static final int DELETE_REQUEST_FAILED = 0x4007;
 	
 	
 
