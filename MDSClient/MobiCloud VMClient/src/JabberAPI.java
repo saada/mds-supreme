@@ -245,15 +245,17 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		}
 		//</view>
 		//<download>
-		public String createRequestDownload(String jid, int entityId)
+		public String createRequestDownload(String jid, String destinationPath, String fileName)
 		{
-			return "<MSG><requests><download jid="+jid+" e_id="+entityId+"></download></requests></MSG>";
-		}
-		public String createResponeDownload(String jid)
-		{
-			return "<MSG><responses><download jid="+jid+">FILE WILL BE DOWNLOADED IN A MOMENT</download></responses></MSG>";
+			return "<MSG><requests><download type=\""+MsgDict.DOWNLOAD_REQUEST+"\" jid="+jid+" destination="+destinationPath+" filename="+fileName+"></download></requests></MSG>";
 		}
 		//</download>
+		//<upload>
+		public String createRequestUpload(String jid, String destinationPath, String fileName)
+		{
+			return "<MSG><requests><upload type=\""+MsgDict.UPLOAD_REQUEST+"\" jid="+jid+" destination="+destinationPath+" filename="+fileName+"></upload></requests></MSG>";
+		}
+		//</upload>
 		
 		//<modify>
 		//CHANGE PERMISSION
@@ -338,10 +340,24 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 //			 return str;
 //		}
 		//MODIFY RESPONSE
-		public String createResponseModify(boolean success, int requestType)
+		public String createResponse(boolean success, int requestType)
 		{
 			switch(requestType)
 			{
+				case MsgDict.DOWNLOAD_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_SUCCESSFUL+"\"></download></responses></MSG>";
+					else
+						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_FAILED+"\"></download></responses></MSG>";
+				}
+				case MsgDict.UPLOAD_REQUEST:
+				{
+					if(success)
+						return "<MSG><responses><upload type=\""+MsgDict.UPLOAD_REQUEST_SUCCESSFUL+"\"></upload></responses></MSG>";
+					else
+						return "<MSG><responses><upload type=\""+MsgDict.UPLOAD_REQUEST_FAILED+"\"></upload></responses></MSG>";
+				}
 				case MsgDict.USERPERMISSION_REQUEST:
 				{
 					if(success)
@@ -381,264 +397,291 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			return null;
 		}
 		//</modify>
-		
-///////////////////////////////////////////////////////tcp file transfer send -- client
-		public void sendFileTcp(String ip, String filename){
-		 Socket s = null;
-	        try{
-
-	          int serverPort = 6880;
-	               
-
-	          s = new Socket(ip, serverPort);
-
-	          DataInputStream input = new DataInputStream( s.getInputStream());
-
-	          DataOutputStream output = new DataOutputStream( s.getOutputStream());
-	          
-
-	          	int index = filename.indexOf('.');
-		        File f = new File(filename);
-		        String sub = filename.substring(index);
-		        
-		        FileInputStream fin = null;
-		        FileChannel ch = null;
-
-		        try {
-		            fin = new FileInputStream(f);
-		            ch = fin.getChannel();
-		            int size = (int) ch.size();
-		            MappedByteBuffer buf = ch.map(MapMode.READ_ONLY, 0, size);
-			        byte[] bytes = new byte[size];
-		            buf.get(bytes);
-
-
-		              
-		              
-		              //output.writeInt(data.length());
-		              output.writeInt(sub.getBytes().length);
-		              output.writeInt(bytes.length);
-
-		              //Step 2 send length
-
-
-
-		              //output.writeBytes(data); // UTF is a string encoding
-		              output.write(sub.getBytes());
-		              output.write(bytes);
-
-		        } catch (IOException e) {
-		            // TODO Auto-generated catch block
-		            e.printStackTrace();
-		        } finally {
-		            try {
-		                if (fin != null) {
-		                    fin.close();
-		                }
-		                if (ch != null) {
-		                    ch.close();
-		                }
-		            } catch (IOException e) {
-		                // TODO Auto-generated catch block
-		                e.printStackTrace();
-		            }
-		        }
-
-	              //Step 1 send length
-
-
-
-	              //Step 1 read length
-
-	              int nb = input.readInt();
-	              
-
-	              byte[] digit = new byte[nb];
-
-	              //Step 2 read byte
-
-	              for(int i = 0; i < nb; i++)
-
-	                digit[i] = input.readByte();
-
-	          
-
-	        }
-
-	        catch (UnknownHostException e){
-
-	            System.out.println("Sock:"+e.getMessage());}
-
-	        catch (EOFException e){
-
-	            System.out.println("EOF:"+e.getMessage()); }
-
-	        catch (IOException e){
-
-	            System.out.println("IO:"+e.getMessage());}
-
-	        finally {
-
-	              if(s!=null)
-
-	                  try {s.close();
-
-	                  }
-
-	                  catch (IOException e) {/*close failed*/}
-
-	        }
+/////////////////////////////////////download		
+		public void acceptStart(String domain, int port, String path) throws IOException {
+			CS_FileTransfer filetransfer = new CS_FileTransfer(port,path);
+			filetransfer.setDomain(domain);
+			Thread Acc_thread = new Thread(filetransfer);
+			Acc_thread.start();
 		}
-		  
-		
-		
-///////////////////////////////////////////////////////tcp file transter revceive -- server
-		public void receiveFileTcp(String path){
-			try{
-
-	            int serverPort = 6880;
-
-	            ServerSocket listenSocket = new ServerSocket(serverPort);
-	        System.out.println("server start listening... ... ...");
-
-	         
-
-	            while(true) {
-
-	                Socket clientSocket = listenSocket.accept();
-	                
-	                Connection c = new Connection(clientSocket, path);
-
-	            }
-
-	    }
-
-	    catch(IOException e) {
-
-	        System.out.println("Listen :"+e.getMessage());}
-
-	  }
-		
-	}
-
-	class Connection extends Thread {
-
-	    DataInputStream input;
-
-	    DataOutputStream output;
-
-	    Socket clientSocket;
-	    
-	    String path;
-
-    public Connection (Socket aClientSocket, String p) {
-
-        try {
-        			path = p;
-                    clientSocket = aClientSocket;
-
-                    input = new DataInputStream( clientSocket.getInputStream());
-
-                    output =new DataOutputStream( clientSocket.getOutputStream());
-
-                    this.start();
-
-        }
-
-            catch(IOException e) {
-
-            System.out.println("Connection:"+e.getMessage());
-
-            }
-
-      }
-
- 
-
-      public void run() {
-
-        try { // an echo server
-
-          //  String data = input.readUTF();
-
-                 
-
-              int nb = input.readInt();
-              int sb = input.readInt();
-              
-              System.out.println("Read Length"+ nb);
-              System.out.println("Read second length"+ sb);
-
-
-              byte[] digit = new byte[nb];
-              byte[] digit2 = new byte[sb];
-              //Step 2 read byte
-
-               System.out.println("Writing.......");
-
-              for(int i = 0; i < nb; i++)
-
-                digit[i] = input.readByte();
-              for(int i = 0; i<sb;i++)
-              {
-            	  digit2[i] = input.readByte();
-              }
-
-               String st = new String(digit);
-              String strFilePath = path+st;
-              File file = new File(strFilePath);
-              if(!file.exists()){
-            	  file.createNewFile();
-              }
-              try
-              {
-            	  FileOutputStream fos = new FileOutputStream(strFilePath);
-            	  fos.write(digit2);
-            	  fos.close();
-              }
-              catch(FileNotFoundException ex)
-              {
-            	  System.out.println("FileNotFoundException: " + ex);
-              }
-              catch(IOException ioe)
-              {
-            	  System.out.println("IOException: " + ioe);
-              }
-               
-
-               String st2 = new String(digit2);
-
-              //Step 1 send length
-
-              output.writeInt(st.length());
-
-              //Step 2 send length
-          output.writeBytes(st); // UTF is a string encoding
-
-          //  output.writeUTF(data);
-
-            }
-
-            catch(EOFException e) {
-            System.out.println("EOF:"+e.getMessage()); }
-            catch(IOException e) {
-            System.out.println("IO:"+e.getMessage());} 
-
-    
-
-            finally {
-
-              try {
-
-                  clientSocket.close();
-
-              }
-
-              catch (IOException e){/*close failed*/}
-
-            }
-
-        }
-
+	
+		public void invokeToVM(String domain, int port, String path) throws IOException{
+			CS_FileTransfer filetransfer = new CS_FileTransfer(port,path);
+			filetransfer.setDomain(domain);
+			filetransfer.invoke(true);
+		}
+	
+	//////////////////////////////////////uploadfileFromClient
+		public boolean acceptUpload(String filename, String path) throws IOException{
+			Upload_Acc accUpload =  new Upload_Acc(path, filename);
+			accUpload.start();
+			if(accUpload.isAlive())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+/////////////////////////////////////////////////////////tcp file transfer send -- client
+//		public boolean sendFileTcp(String ip, String filename){
+//		 Socket s = null;
+//	        try{
+//
+//	          int serverPort = 6880;
+//	               
+//
+//	          s = new Socket(ip, serverPort);
+//
+//	          DataInputStream input = new DataInputStream( s.getInputStream());
+//
+//	          DataOutputStream output = new DataOutputStream( s.getOutputStream());
+//	          
+//
+//	          	int index = filename.indexOf('.');
+//		        File f = new File(filename);
+//		        String sub = filename.substring(index);
+//		        
+//		        FileInputStream fin = null;
+//		        FileChannel ch = null;
+//
+//		        try {
+//		            fin = new FileInputStream(f);
+//		            ch = fin.getChannel();
+//		            int size = (int) ch.size();
+//		            MappedByteBuffer buf = ch.map(MapMode.READ_ONLY, 0, size);
+//			        byte[] bytes = new byte[size];
+//		            buf.get(bytes);
+//
+//
+//		              
+//		              
+//		              //output.writeInt(data.length());
+//		              output.writeInt(sub.getBytes().length);
+//		              output.writeInt(bytes.length);
+//
+//		              //Step 2 send length
+//
+//
+//
+//		              //output.writeBytes(data); // UTF is a string encoding
+//		              output.write(sub.getBytes());
+//		              output.write(bytes);
+//
+//		        } catch (IOException e) {
+//		            // TODO Auto-generated catch block
+//		            e.printStackTrace();
+//		        } finally {
+//		            try {
+//		                if (fin != null) {
+//		                    fin.close();
+//		                }
+//		                if (ch != null) {
+//		                    ch.close();
+//		                }
+//		            } catch (IOException e) {
+//		                // TODO Auto-generated catch block
+//		                e.printStackTrace();
+//		            }
+//		        }
+//
+//	              //Step 1 send length
+//
+//
+//
+//	              //Step 1 read length
+//
+//	              int nb = input.readInt();
+//	              
+//
+//	              byte[] digit = new byte[nb];
+//
+//	              //Step 2 read byte
+//
+//	              for(int i = 0; i < nb; i++)
+//
+//	                digit[i] = input.readByte();
+//
+//	          
+//
+//	        }
+//
+//	        catch (UnknownHostException e){
+//
+//	            System.out.println("Sock:"+e.getMessage());}
+//
+//	        catch (EOFException e){
+//
+//	            System.out.println("EOF:"+e.getMessage()); }
+//
+//	        catch (IOException e){
+//
+//	            System.out.println("IO:"+e.getMessage());}
+//
+//	        finally {
+//
+//	              if(s!=null)
+//
+//	                  try {s.close();
+//
+//	                  }
+//
+//	                  catch (IOException e) {/*close failed*/}
+//
+//	        }
+//	        return true;
+//		}
+//		  
+//		
+//		
+/////////////////////////////////////////////////////////tcp file transter revceive -- server
+//		public void receiveFileTcp(String path){
+//			try{
+//
+//	            int serverPort = 6880;
+//
+//	            ServerSocket listenSocket = new ServerSocket(serverPort);
+//	        System.out.println("server start listening... ... ...");
+//
+//	         
+//
+//	            while(true) {
+//
+//	                Socket clientSocket = listenSocket.accept();
+//	                
+//	                Connection c = new Connection(clientSocket, path);
+//
+//	            }
+//
+//	    }
+//
+//	    catch(IOException e) {
+//
+//	        System.out.println("Listen :"+e.getMessage());}
+//
+//	  }
+//		
+//	}
+//
+//	class Connection extends Thread {
+//
+//	    DataInputStream input;
+//
+//	    DataOutputStream output;
+//
+//	    Socket clientSocket;
+//	    
+//	    String path;
+//
+//    public Connection (Socket aClientSocket, String p) {
+//
+//        try {
+//        			path = p;
+//                    clientSocket = aClientSocket;
+//
+//                    input = new DataInputStream( clientSocket.getInputStream());
+//
+//                    output =new DataOutputStream( clientSocket.getOutputStream());
+//
+//                    this.start();
+//
+//        }
+//
+//            catch(IOException e) {
+//
+//            System.out.println("Connection:"+e.getMessage());
+//
+//            }
+//
+//      }
+//
+// 
+//
+//      public void run() {
+//
+//        try { // an echo server
+//
+//          //  String data = input.readUTF();
+//
+//                 
+//
+//              int nb = input.readInt();
+//              int sb = input.readInt();
+//              
+//              System.out.println("Read Length"+ nb);
+//              System.out.println("Read second length"+ sb);
+//
+//
+//              byte[] digit = new byte[nb];
+//              byte[] digit2 = new byte[sb];
+//              //Step 2 read byte
+//
+//               System.out.println("Writing.......");
+//
+//              for(int i = 0; i < nb; i++)
+//
+//                digit[i] = input.readByte();
+//              for(int i = 0; i<sb;i++)
+//              {
+//            	  digit2[i] = input.readByte();
+//              }
+//
+//               String st = new String(digit);
+//              String strFilePath = path+st;
+//              File file = new File(strFilePath);
+//              if(!file.exists()){
+//            	  file.createNewFile();
+//              }
+//              try
+//              {
+//            	  FileOutputStream fos = new FileOutputStream(strFilePath);
+//            	  fos.write(digit2);
+//            	  fos.close();
+//              }
+//              catch(FileNotFoundException ex)
+//              {
+//            	  System.out.println("FileNotFoundException: " + ex);
+//              }
+//              catch(IOException ioe)
+//              {
+//            	  System.out.println("IOException: " + ioe);
+//              }
+//               
+//
+//               String st2 = new String(digit2);
+//
+//              //Step 1 send length
+//
+//              output.writeInt(st.length());
+//
+//              //Step 2 send length
+//          output.writeBytes(st); // UTF is a string encoding
+//
+//          //  output.writeUTF(data);
+//
+//            }
+//
+//            catch(EOFException e) {
+//            System.out.println("EOF:"+e.getMessage()); }
+//            catch(IOException e) {
+//            System.out.println("IO:"+e.getMessage());} 
+//
+//    
+//
+//            finally {
+//
+//              try {
+//
+//                  clientSocket.close();
+//
+//              }
+//
+//              catch (IOException e){/*close failed*/}
+//
+//            }
+//
+//        }
+//
 
 }

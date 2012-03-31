@@ -1,0 +1,67 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
+public class CS_FileTransfer implements Runnable {
+	String DomainName;
+	int serverPort;
+	String filename;
+	Thread[] thread;
+	Socket sock;
+	ServerSocket listenSocket;
+	int Tcounter;
+	
+	public CS_FileTransfer( int port, String file) throws IOException
+	{
+		serverPort = port;
+		filename = file;
+		thread = new Thread[1024];
+		Tcounter = 0;
+		listenSocket = new ServerSocket(serverPort);
+	}
+	public void setDomain(String d)
+	{
+		DomainName=d;
+		
+	}
+	public void invoke(boolean flag) throws IOException
+	{
+		System.out.println(DomainName+ "  " + serverPort );
+		sock = new Socket(DomainName,serverPort);
+		System.out.println("FUFUFUFUF");
+		Invoke_Connnection invoke = new Invoke_Connnection(DomainName,filename,sock,flag);
+		invoke.start();
+		ProgressMonitor monitor = new ProgressMonitor(invoke);
+		monitor.start();
+		System.out.println("finished");
+	}
+	
+	@Override
+	public void run() {
+		while(true)
+		{
+			System.out.println("Listening for connections...");
+			try {
+				sock = listenSocket.accept();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			thread[Tcounter] = new Accept_Connnection(filename, sock);
+			thread[Tcounter].start();
+			while(thread[Tcounter].isAlive())
+			{
+				Tcounter++;
+				Tcounter%=1024;
+				if(thread[Tcounter]==null)
+				{
+					break;
+				}
+			}
+			System.out.println("Running");
+		}
+	}
+
+	
+
+}

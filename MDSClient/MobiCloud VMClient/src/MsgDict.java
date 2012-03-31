@@ -69,7 +69,14 @@ public class MsgDict {
 	public static final int DELETE_REQUEST_SUCCESSFUL = 0x3007;
 	public static final int DELETE_REQUEST_FAILED = 0x4007;
 	
-	
+	//Upload
+	public static final int UPLOAD_REQUEST = 0x7771;
+	public static final int UPLOAD_REQUEST_SUCCESSFUL = 0x7772;
+	public static final int UPLOAD_REQUEST_FAILED = 0x7773;
+	//Download
+	public static final int DOWNLOAD_REQUEST = 0x7774;
+	public static final int DOWNLOAD_REQUEST_SUCCESSFUL = 0x7775;
+	public static final int DOWNLOAD_REQUEST_FAILED = 0x7776;
 
 	
 }

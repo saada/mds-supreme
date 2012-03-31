@@ -122,7 +122,7 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//return true if successfully renamed entity
-								outMessage.setBody(c.createResponseModify(
+								outMessage.setBody(c.createResponse(
 										dbStarter.renameEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newname")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
@@ -137,7 +137,7 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//return true if successfully moved entity
-								outMessage.setBody(c.createResponseModify(
+								outMessage.setBody(c.createResponse(
 										dbStarter.moveEntity(Integer.parseInt(msg.getAtr("e_id")),msg.getAtr("newpath")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
@@ -152,7 +152,7 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//return true if successfully created directory
-								outMessage.setBody(c.createResponseModify(
+								outMessage.setBody(c.createResponse(
 										dbStarter.createDirectory(msg.getAtr("name"),msg.getAtr("url")),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
@@ -166,7 +166,7 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//return true if successfully deleted entity
-								outMessage.setBody(c.createResponseModify(
+								outMessage.setBody(c.createResponse(
 										dbStarter.deleteEntity(Integer.parseInt(msg.getAtr("e_id"))),msgType)
 								);
 								c.getConnection().sendPacket(outMessage);
@@ -175,24 +175,32 @@ public class MessageHandler extends Thread  {
 							}
 							break;
 						}
-////////////////////////////////TCP FILE TRANSFER 3/1/2012
-						case MsgDict.FILETRANSFER_REQUEST:
-						{							
-							c.sendFileTcp("", "");
+						case MsgDict.UPLOAD_REQUEST:
+						{	
+							//if owner
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								//String domain = from.split("@")[0]+".mobicloud.asu.edu";
+								boolean threadStarted = c.acceptUpload(msg.getAtr("filename"), msg.getAtr("destination"));
+								outMessage.setBody(c.createResponse(threadStarted, msgType));
+							}
 							break;
 						}
-						case MsgDict.FILETRANSFER_RECEIVED:
-						{							
-							c.receiveFileTcp("");
+						case MsgDict.DOWNLOAD_REQUEST:
+						{
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							{
+								String domain = from.split("@")[0]+".mobicloud.asu.edu";
+								c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+							}
 							break;
 						}
-////////////////////////////////TCP FILE TRANSFER 3/1/2012
 					}
 				}
 			}
 			if(msgType == MsgDict.USERPERMISSION_REQUEST)
 			{
-				outMessage.setBody(c.createResponseModify(success,msgType));
+				outMessage.setBody(c.createResponse(success,msgType));
 				c.getConnection().sendPacket(outMessage);
 			}
 		}
