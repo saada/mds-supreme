@@ -405,10 +405,11 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			Acc_thread.start();
 		}
 	
-		public void invokeToVM(String domain, int port, String path) throws IOException{
+		public boolean invokeToVM(String domain, int port, String path) throws IOException{
 			CS_FileTransfer filetransfer = new CS_FileTransfer(port,path);
 			filetransfer.setDomain(domain);
-			filetransfer.invoke(true);
+			return filetransfer.invoke(true);
+			
 		}
 	
 	//////////////////////////////////////uploadfileFromClient

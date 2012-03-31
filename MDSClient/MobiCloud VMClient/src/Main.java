@@ -30,6 +30,10 @@ public class Main {
 					+"\tType: "+r.getType()
 					+"\n");
 		}
+		
+		//Initialize file transfer thread pool
+		c.acceptStart("", 6880, "");
+		
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
 		

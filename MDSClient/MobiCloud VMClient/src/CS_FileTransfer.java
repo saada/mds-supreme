@@ -25,7 +25,7 @@ public class CS_FileTransfer implements Runnable {
 		DomainName=d;
 		
 	}
-	public void invoke(boolean flag) throws IOException
+	public boolean invoke(boolean flag) throws IOException
 	{
 		System.out.println(DomainName+ "  " + serverPort );
 		sock = new Socket(DomainName,serverPort);
@@ -35,6 +35,8 @@ public class CS_FileTransfer implements Runnable {
 		ProgressMonitor monitor = new ProgressMonitor(invoke);
 		monitor.start();
 		System.out.println("finished");
+		return(invoke.isAlive());
+		
 	}
 	
 	@Override

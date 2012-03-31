@@ -191,7 +191,8 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								String domain = from.split("@")[0]+".mobicloud.asu.edu";
-								c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+								boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+								outMessage.setBody(c.createResponse(invokeStarted, msgType));
 							}
 							break;
 						}
