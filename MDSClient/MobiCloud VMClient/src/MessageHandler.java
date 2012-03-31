@@ -181,7 +181,11 @@ public class MessageHandler extends Thread  {
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//String domain = from.split("@")[0]+".mobicloud.asu.edu";
-								boolean threadStarted = c.acceptUpload(msg.getAtr("filename"), msg.getAtr("destination"));
+								boolean threadStarted;
+								if(msg.getAtr("destination").equals(""))
+									threadStarted = c.acceptUpload(msg.getAtr("filename"), System.getProperty("user.home")+"/Desktop/My Files/");
+								else
+									threadStarted = c.acceptUpload(msg.getAtr("filename"), msg.getAtr("destination"));
 								outMessage.setBody(c.createResponse(threadStarted, msgType));
 							}
 							break;
