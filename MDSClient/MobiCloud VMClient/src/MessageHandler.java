@@ -187,6 +187,7 @@ public class MessageHandler extends Thread  {
 								else
 									threadStarted = c.acceptUpload(msg.getAtr("filename"), msg.getAtr("destination"));
 								outMessage.setBody(c.createResponse(threadStarted, msgType));
+								c.getConnection().sendPacket(outMessage);
 							}
 							break;
 						}
@@ -197,6 +198,7 @@ public class MessageHandler extends Thread  {
 								String domain = from.split("@")[0]+".mobicloud.asu.edu";
 								boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
 								outMessage.setBody(c.createResponse(invokeStarted, msgType));
+								c.getConnection().sendPacket(outMessage);
 							}
 							break;
 						}
