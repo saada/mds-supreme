@@ -63,7 +63,7 @@ public class Main {
 		//c.sendMessage("Request Rejected", talkTo);
 
 		//end program and database and xmpp connections
-		
+		c.closeSocket();
 		c.disconnect();
 		dbStarter.close();
 		System.exit(0);

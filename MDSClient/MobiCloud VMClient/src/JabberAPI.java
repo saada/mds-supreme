@@ -437,6 +437,12 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 				return false;
 			}
 		}
+		
+		public void closeSocket()
+		{
+			filetransfer1.closeSocket();
+			filetransfer2.closeSocket();
+		}
 /////////////////////////////////////////////////////////tcp file transfer send -- client
 //		public boolean sendFileTcp(String ip, String filename){
 //		 Socket s = null;

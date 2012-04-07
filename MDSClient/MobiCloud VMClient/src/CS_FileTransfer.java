@@ -8,7 +8,7 @@ public class CS_FileTransfer implements Runnable {
 	int serverPort;
 	String filename;
 	Thread[] thread;
-	Socket sock;
+	volatile Socket sock;
 	ServerSocket listenSocket;
 	int Tcounter;
 	
@@ -48,6 +48,7 @@ public class CS_FileTransfer implements Runnable {
 				sock = listenSocket.accept();
 			} catch (IOException e) {
 				e.printStackTrace();
+				return;
 			}
 			thread[Tcounter] = new Accept_Connnection(filename, sock);
 			thread[Tcounter].start();
@@ -61,6 +62,15 @@ public class CS_FileTransfer implements Runnable {
 				}
 			}
 			System.out.println("Running");
+		}
+	}
+	
+	public void closeSocket()
+	{
+		try {
+			sock.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
