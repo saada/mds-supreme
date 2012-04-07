@@ -193,13 +193,22 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.DOWNLOAD_REQUEST:
 						{
-							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
+							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0])
+									|| from.split("/")[1].equals("VM"))
 							{
 								String domain = from.split("@")[0]+".mobicloud.asu.edu";
 								boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
 								outMessage.setBody(c.createResponse(invokeStarted, msgType));
 								c.getConnection().sendPacket(outMessage);
 							}
+							break;
+						}
+						case MsgDict.DOWNLOAD_REQUEST_FRIEND:
+						{
+							String domain = msg.getAtr("jid").split("@")[0]+".mobicloud.asu.edu";
+							boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+							outMessage.setBody(c.createResponse(invokeStarted, msgType));
+							c.getConnection().sendPacket(outMessage);
 							break;
 						}
 					}

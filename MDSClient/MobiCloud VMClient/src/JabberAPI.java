@@ -23,6 +23,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Scanner;
 
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.ConnectionConfiguration;
@@ -64,7 +65,12 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 			
 			// Enter your login information here
 			try {
-				login("xin", "xin", "VM");
+				System.out.println("Enter username> ");
+				Scanner scan = new Scanner(System.in);
+				String username = scan.next();
+				System.out.println("Enter password> ");
+				String password = scan.next();
+				login(username, password, "VM");
 			} catch (XMPPException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -250,6 +256,10 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		public String createRequestDownload(String jid, String destinationPath, String fileName)
 		{
 			return "<MSG><requests><download type=\""+MsgDict.DOWNLOAD_REQUEST+"\" jid="+jid+" destination="+destinationPath+" filename="+fileName+"></download></requests></MSG>";
+		}
+		public String createRequestDownloadFromFriend(String jid, String destinationPath, String fileName)
+		{
+			return "<MSG><requests><download type=\""+MsgDict.DOWNLOAD_REQUEST_FRIEND+"\" jid="+jid+" destination="+destinationPath+" filename="+fileName+"></download></requests></MSG>";
 		}
 		//</download>
 		//<upload>

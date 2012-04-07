@@ -150,10 +150,21 @@ public class XMLParser {
 						{
 							 atr.clear();
 							 //String t = modlist.item(k).getNodeName();
-							 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
-							 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
-							 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
-							 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST,atr));
+							 int downloadType = Integer.parseInt(((Element) modlist.item(k)).getAttribute("type"));
+							 if(downloadType == MsgDict.DOWNLOAD_REQUEST)
+							 {
+								 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
+								 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
+								 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
+								 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST,atr));
+							 }
+							 else if(downloadType == MsgDict.DOWNLOAD_REQUEST_FRIEND)
+							 {
+								 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
+								 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
+								 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
+								 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST_FRIEND,atr));
+							 }
 						}
 					}
 				}

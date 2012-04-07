@@ -37,7 +37,7 @@ public class Main {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		String msg = "message start: <root>\n";
 		
-		String yesorno = "NO";
+		String input = "";
 		
 
 
@@ -56,8 +56,8 @@ public class Main {
 		//c.sendMessage(treeString, "xin@mobicloud-mds-mysqlserver");
 		
 
-		while ((yesorno = br.readLine()).equalsIgnoreCase("YES")) {
-			c.sendMessage(msg, talkTo);			
+		while (!(input = br.readLine()).equalsIgnoreCase("q")) {
+			
 		}
 		
 		//c.sendMessage("Request Rejected", talkTo);
