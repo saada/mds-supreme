@@ -131,41 +131,33 @@ public class XMLParser {
 					if(type.equals("upload"))
 					{
 						Element mod = (Element)nll.item(j);
-						NodeList modlist =mod.getChildNodes();
-						for(int k=0; k<modlist.getLength(); k++)
-						{
 							 atr.clear();
 							 //String t = modlist.item(k).getNodeName();
-							 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
-							 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
-							 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
+							 atr.put("jid", mod.getAttribute("jid"));
+							 atr.put("destination", mod.getAttribute("destination"));
+							 atr.put("filename", mod.getAttribute("filename"));
 							 msg.add(new Msg(MsgDict.UPLOAD_REQUEST,atr));
-						}
 					}
 					if(type.equals("download"))
 					{
 						Element mod = (Element)nll.item(j);
-						NodeList modlist =mod.getChildNodes();
-						for(int k=0; k<modlist.getLength(); k++)
-						{
-							 atr.clear();
-							 //String t = modlist.item(k).getNodeName();
-							 int downloadType = Integer.parseInt(((Element) modlist.item(k)).getAttribute("type"));
-							 if(downloadType == MsgDict.DOWNLOAD_REQUEST)
-							 {
-								 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
-								 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
-								 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
-								 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST,atr));
-							 }
-							 else if(downloadType == MsgDict.DOWNLOAD_REQUEST_FRIEND)
-							 {
-								 atr.put("jid", ((Element) modlist.item(k)).getAttribute("jid"));
-								 atr.put("destination", ((Element) modlist.item(k)).getAttribute("destination"));
-								 atr.put("filename", ((Element) modlist.item(k)).getAttribute("filename"));
-								 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST_FRIEND,atr));
-							 }
-						}
+						 atr.clear();
+						 //String t = modlist.item(k).getNodeName();
+						 int downloadType = Integer.parseInt(mod.getAttribute("type"));
+						 if(downloadType == MsgDict.DOWNLOAD_REQUEST)
+						 {
+							 atr.put("jid", mod.getAttribute("jid"));
+							 atr.put("destination", mod.getAttribute("destination"));
+							 atr.put("filename", mod.getAttribute("filename"));
+							 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST,atr));
+						 }
+						 else if(downloadType == MsgDict.DOWNLOAD_REQUEST_FRIEND)
+						 {
+							 atr.put("jid", mod.getAttribute("jid"));
+							 atr.put("destination", mod.getAttribute("destination"));
+							 atr.put("filename", mod.getAttribute("filename"));
+							 msg.add(new Msg(MsgDict.DOWNLOAD_REQUEST_FRIEND,atr));
+						 }
 					}
 				}
 				

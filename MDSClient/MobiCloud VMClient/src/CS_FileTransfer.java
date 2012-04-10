@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -8,18 +9,23 @@ public class CS_FileTransfer implements Runnable {
 	int serverPort;
 	String filename;
 	Thread[] thread;
-	volatile Socket sock;
+	volatile Socket sock = new Socket();
 	ServerSocket listenSocket;
 	int Tcounter;
 	
-	public CS_FileTransfer( int port, String file) throws IOException
+	public CS_FileTransfer( int port, String file, boolean portInUse) throws IOException
 	{
 		serverPort = port;
 		filename = file;
 		thread = new Thread[1024];
 		Tcounter = 0;
-		listenSocket = new ServerSocket(serverPort);
+		if(!portInUse)
+			listenSocket = new ServerSocket(serverPort);
 	}
+	
+	public CS_FileTransfer() {
+	}
+	
 	public void setDomain(String d)
 	{
 		DomainName=d;
@@ -28,13 +34,14 @@ public class CS_FileTransfer implements Runnable {
 	public boolean invoke(boolean flag) throws IOException
 	{
 		System.out.println(DomainName+ "  " + serverPort );
+		//InetAddress a = InetAddress.getLocalHost();
 		sock = new Socket(DomainName,serverPort);
-		System.out.println("FUFUFUFUF");
+		//System.out.println("FUFUFUFUF");
 		Invoke_Connnection invoke = new Invoke_Connnection(DomainName,filename,sock,flag);
 		invoke.start();
 		ProgressMonitor monitor = new ProgressMonitor(invoke);
 		monitor.start();
-		System.out.println("finished");
+		//System.out.println("finished");
 		return(invoke.isAlive());
 		
 	}
@@ -46,6 +53,7 @@ public class CS_FileTransfer implements Runnable {
 			System.out.println("Listening for connections...");
 			try {
 				sock = listenSocket.accept();
+				System.out.println("Accepted");
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;

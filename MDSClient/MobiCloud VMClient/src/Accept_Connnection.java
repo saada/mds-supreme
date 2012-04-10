@@ -39,7 +39,6 @@ public class Accept_Connnection extends Thread {
 			buf.get(bytes);
 			output.writeInt(bytes.length);
 			output.write(bytes);
-			output.flush();
 			try{
 				int leng = input.readInt();
 				byte[] fin2 = new byte[leng];

@@ -46,8 +46,8 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 	public class JabberAPI implements MessageListener {
 		XMPPConnection connection;
 		Upload_Acc accUpload;
-		CS_FileTransfer filetransfer1;
-		CS_FileTransfer filetransfer2;
+		CS_FileTransfer filetransfer1 = new CS_FileTransfer();
+		CS_FileTransfer filetransfer2= new CS_FileTransfer();
 		Collection<RosterEntry> entries;
 		PacketTypeFilter filter = new PacketTypeFilter(Message.class);
 		MessageHandler mHandler;
@@ -356,12 +356,19 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		{
 			switch(requestType)
 			{
-				case MsgDict.DOWNLOAD_REQUEST:
+				case MsgDict.DOWNLOAD_REQUEST: 
 				{
 					if(success)
 						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_SUCCESSFUL+"\"></download></responses></MSG>";
 					else
 						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_FAILED+"\"></download></responses></MSG>";
+				}
+				case MsgDict.DOWNLOAD_REQUEST_FRIEND:
+				{
+					if(success)
+						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_FRIEND_SUCCESSFUL+"\"></download></responses></MSG>";
+					else
+						return "<MSG><responses><download type=\""+MsgDict.DOWNLOAD_REQUEST_FRIEND_FAILED+"\"></download></responses></MSG>";
 				}
 				case MsgDict.UPLOAD_REQUEST:
 				{
@@ -411,14 +418,14 @@ import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
 		//</modify>
 /////////////////////////////////////download		
 		public void acceptStart(String domain, int port, String path) throws IOException {
-			filetransfer1 = new CS_FileTransfer(port,path);
+			filetransfer1 = new CS_FileTransfer(port,path, false);
 			filetransfer1.setDomain(domain);
 			Thread Acc_thread = new Thread(filetransfer1);
 			Acc_thread.start();
 		}
 	
 		public boolean invokeToVM(String domain, int port, String path) throws IOException{
-			filetransfer2 = new CS_FileTransfer(port,path);
+			filetransfer2 = new CS_FileTransfer(port,path, true);
 			filetransfer2.setDomain(domain);
 			return filetransfer2.invoke(true);
 			

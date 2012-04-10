@@ -43,14 +43,7 @@ public class Main {
 
 		c.displayBuddyList();
 
-		System.out.println("-----");
-
-		System.out.println("Who do you want to talk to? - Type contacts full email address:");
-		String talkTo = br.readLine();
-
-		System.out.println("-----");
-		System.out.println("Do you want to send file list in your VM to that guy? YES or NO");
-		System.out.println("-----\n");
+		System.out.println("Enter 'q' at anytime to exit!\n");
 		
 		//send tree
 		//c.sendMessage(treeString, "xin@mobicloud-mds-mysqlserver");

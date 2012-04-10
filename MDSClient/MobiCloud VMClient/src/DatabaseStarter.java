@@ -47,20 +47,20 @@ public class DatabaseStarter {
 	{
 		filePath.visitAllDirsAndFiles(homeDir);
 		//pass recordslist to a local arraylist
-		ArrayList<String> recordsList = new ArrayList<String>();
-		recordsList.addAll(filePath.getRecordsList());
-
-		//clear and reset database
-		dao.deleteAll(table);
-		dao.resetAutoID(table);
-		
-		//insert entities to database
-		for(int i=0; i< recordsList.size(); i++) {
-			System.out.println("RECORD["+i+"] = "+recordsList.get(i));
-			dao.insertEntity(recordsList.get(i));
-		}
-		//print on console for testing
-		dao.writeResultSet(dao.selectAll(table));
+//		ArrayList<String> recordsList = new ArrayList<String>();
+//		recordsList.addAll(filePath.getRecordsList());
+//
+//		//clear and reset database
+//		dao.deleteAll(table);
+//		dao.resetAutoID(table);
+//		
+//		//insert entities to database
+//		for(int i=0; i< recordsList.size(); i++) {
+////			System.out.println("RECORD["+i+"] = "+recordsList.get(i));
+//			dao.insertEntity(recordsList.get(i));
+//		}
+//		//print on console for testing
+//		dao.writeResultSet(dao.selectAll(table));
 	}
 	public String getLocalTreeString()
 	{
@@ -71,7 +71,7 @@ public class DatabaseStarter {
 			ResultSet rs = dao.selectAll(table);
 			myTree.generate(rs,dao);
 			String treeString = Serialization.toString(myTree.root);
-			System.out.println(treeString);
+//			System.out.println(treeString);
 			return treeString;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,7 +83,7 @@ public class DatabaseStarter {
 		try {
 			myTree.generate(dao.selectAll(table),dao);
 			String treeString = Serialization.toString(myTree.generatePermitted(dao.selectPermittedEntites(jid)));
-			System.out.println(treeString);
+//			System.out.println(treeString);
 			return treeString;
 		} catch (Exception e) {
 			e.printStackTrace();

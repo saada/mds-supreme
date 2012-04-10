@@ -30,29 +30,31 @@ public class Upload_Acc extends Thread {
 	    	Socket sock = null;
 	  	  	ServerSocket serverListener;
 	  	  	try {
+	  	  		System.out.println("UPLOAD: before");
 	  	  		serverListener = new ServerSocket(serverPort);
 				sock = serverListener.accept();
+				System.out.println("UPLOAD: after");
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 	      	try {
+	      			System.out.println("UPLOAD: "+path+"\t"+file);
 	      			DataInputStream input = new DataInputStream( sock.getInputStream());
 	      			DataOutputStream output = new DataOutputStream( sock.getOutputStream());
 					String fpath = path+file;		
-					output.writeInt(fpath.length());
-		        	output.writeBytes(fpath);
+//					output.writeInt(fpath.length());
+//		        	output.writeBytes(fpath);
 					  
 					try
 					{        	
 			        	int leng=input.readInt();
 			        	byte[] digit2 = new byte[leng];
 	
-		            	File file = new File(path);
+		            	File file = new File(fpath);
 		    			if(!file.exists()){
 		    				file.createNewFile();
 		    			}
-		    			FileOutputStream fos = new FileOutputStream(path);
+		    			FileOutputStream fos = new FileOutputStream(fpath);
 		    			for(int i=0; i<leng; i++)
 		    			{
 		    				digit2[i] = input.readByte();

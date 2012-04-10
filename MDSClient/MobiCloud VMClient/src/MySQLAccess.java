@@ -201,13 +201,13 @@ public class MySQLAccess {
                         String url = resultSet.getString("e_url");
                         Date modifiedDate = resultSet.getDate("e_modate");
                         
-                        System.out.print("id: " + id);
-                        System.out.print(", type: " + type);
-                        System.out.print(", name: " + name);
-                        System.out.print(", size: "+ size);
-                        System.out.print(", url: " + url);
-                        System.out.print(", modified: " + modifiedDate);
-                        System.out.print("\n**************************\n");
+//                        System.out.print("id: " + id);
+//                        System.out.print(", type: " + type);
+//                        System.out.print(", name: " + name);
+//                        System.out.print(", size: "+ size);
+//                        System.out.print(", url: " + url);
+//                        System.out.print(", modified: " + modifiedDate);
+//                        System.out.print("\n**************************\n");
                 }
         }
         

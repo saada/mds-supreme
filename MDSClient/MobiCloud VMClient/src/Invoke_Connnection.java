@@ -52,7 +52,7 @@ public class Invoke_Connnection extends Thread{
 				output = new DataOutputStream( sock.getOutputStream());
 				String[] s = filename.split("/");
 				String fname = s[s.length -1];
-				String path = "C:/Users/Tom/Desktop/My File/"+fname;		
+				String path = System.getProperty("user.home")+"/Desktop/My Files/"+fname;		
 				output.writeInt(filename.length());
 	        	output.writeBytes(filename);
 				  

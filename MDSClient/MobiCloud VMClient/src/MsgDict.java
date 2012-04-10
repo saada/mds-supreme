@@ -78,6 +78,8 @@ public class MsgDict {
 	public static final int DOWNLOAD_REQUEST_SUCCESSFUL = 0x7775;
 	public static final int DOWNLOAD_REQUEST_FAILED = 0x7776;
 	public static final int DOWNLOAD_REQUEST_FRIEND = 0x7777;
+	public static final int DOWNLOAD_REQUEST_FRIEND_SUCCESSFUL = 0x7778;
+	public static final int DOWNLOAD_REQUEST_FRIEND_FAILED = 0x7779;
 
 	
 }

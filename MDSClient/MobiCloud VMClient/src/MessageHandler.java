@@ -182,6 +182,7 @@ public class MessageHandler extends Thread  {
 							{
 								//String domain = from.split("@")[0]+".mobicloud.asu.edu";
 								boolean threadStarted;
+								System.out.println("UPLOAD STUFF: \""+msg.getAtr("destination")+"\"");
 								if(msg.getAtr("destination").equals(""))
 									threadStarted = c.acceptUpload(msg.getAtr("filename"), System.getProperty("user.home")+"/Desktop/My Files/");
 								else
@@ -197,7 +198,8 @@ public class MessageHandler extends Thread  {
 									|| from.split("/")[1].equals("VM"))
 							{
 								String domain = from.split("@")[0]+".mobicloud.asu.edu";
-								boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+								//boolean invokeStarted = c.invokeToVM(domain, 6881, msg.getAtr("destination")+msg.getAtr("filename"));
+								boolean invokeStarted = true;
 								outMessage.setBody(c.createResponse(invokeStarted, msgType));
 								c.getConnection().sendPacket(outMessage);
 							}
@@ -206,7 +208,7 @@ public class MessageHandler extends Thread  {
 						case MsgDict.DOWNLOAD_REQUEST_FRIEND:
 						{
 							String domain = msg.getAtr("jid").split("@")[0]+".mobicloud.asu.edu";
-							boolean invokeStarted = c.invokeToVM(domain, 6880, msg.getAtr("destination")+msg.getAtr("filename"));
+							boolean invokeStarted = c.invokeToVM(domain, 6881, msg.getAtr("destination")+msg.getAtr("filename"));
 							outMessage.setBody(c.createResponse(invokeStarted, msgType));
 							c.getConnection().sendPacket(outMessage);
 							break;
