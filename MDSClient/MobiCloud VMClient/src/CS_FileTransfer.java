@@ -36,6 +36,8 @@ public class CS_FileTransfer implements Runnable {
 		System.out.println(DomainName+ "  " + serverPort );
 		//InetAddress a = InetAddress.getLocalHost();
 		sock = new Socket(DomainName,serverPort);
+		sock.setReuseAddress(true);
+		sock.setSoTimeout(1);
 		//System.out.println("FUFUFUFUF");
 		Invoke_Connnection invoke = new Invoke_Connnection(DomainName,filename,sock,flag);
 		invoke.start();
