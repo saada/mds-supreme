@@ -629,4 +629,10 @@ public class MySQLAccess {
 				}
 			}
 		}
+
+		public void addDefaultPermissionToAllUsers(int e_id, Collection<RosterEntry> users) throws Exception {
+			 for (RosterEntry r : users) {        	    	
+         	    	insertUserPermit(e_id, r.getName(), 0);
+			 }
+		}
 }

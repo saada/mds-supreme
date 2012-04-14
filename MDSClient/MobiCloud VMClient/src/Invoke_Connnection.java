@@ -117,14 +117,17 @@ public class Invoke_Connnection extends Thread{
 				catch(FileNotFoundException ex)
 				{
 					System.out.println("FileNotFoundException: " + ex);
+					return;
 				}
 				catch(IOException ioe)
 				{
 					System.out.println("IOException: " + ioe);
+					return;
 				}
 				
 			} catch (Exception e) {
 				e.printStackTrace();
+				return;
 		}
     }
 }

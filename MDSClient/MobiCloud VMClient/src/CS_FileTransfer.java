@@ -81,6 +81,7 @@ public class CS_FileTransfer implements Runnable {
 			sock.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return;
 		}
 	}
 

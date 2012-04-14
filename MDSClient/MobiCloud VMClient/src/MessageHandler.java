@@ -176,18 +176,26 @@ public class MessageHandler extends Thread  {
 							break;
 						}
 						case MsgDict.UPLOAD_REQUEST:
-						{	
+						{
 							//if owner
 							if(c.getConnection().getUser().split("/")[0].equals(from.split("/")[0]))
 							{
 								//String domain = from.split("@")[0]+".mobicloud.asu.edu";
 								boolean threadStarted;
+								String filename = msg.getAtr("filename");
+								String path = System.getProperty("user.home")+"/Desktop/My Files/";
 								System.out.println("UPLOAD STUFF: \""+msg.getAtr("destination")+"\"");
 								if(msg.getAtr("destination").equals(""))
-									threadStarted = c.acceptUpload(msg.getAtr("filename"), System.getProperty("user.home")+"/Desktop/My Files/");
+									threadStarted = c.acceptUpload(filename, path);
 								else
-									threadStarted = c.acceptUpload(msg.getAtr("filename"), msg.getAtr("destination"));
+								{
+									path=msg.getAtr("destination");
+									threadStarted = c.acceptUpload(filename, path);
+								}
 								outMessage.setBody(c.createResponse(threadStarted, msgType));
+								//update database
+								if(threadStarted)
+									dbStarter.insertNewEntity(c.getMyRoster(), path+filename);
 								c.getConnection().sendPacket(outMessage);
 							}
 							break;
@@ -207,9 +215,13 @@ public class MessageHandler extends Thread  {
 						}
 						case MsgDict.DOWNLOAD_REQUEST_FRIEND:
 						{
+							String path = System.getProperty("user.home")+"/Desktop/My Files/";
+							String fileWithPath = msg.getAtr("destination")+msg.getAtr("filename");
 							String domain = msg.getAtr("jid").split("@")[0]+".mobicloud.asu.edu";
-							boolean invokeStarted = c.invokeToVM(domain, 6881, msg.getAtr("destination")+msg.getAtr("filename"));
+							boolean invokeStarted = c.invokeToVM(domain, 6881,fileWithPath);
 							outMessage.setBody(c.createResponse(invokeStarted, msgType));
+							if(invokeStarted)
+								dbStarter.insertNewEntity(c.getMyRoster(), path+msg.getAtr("filename"));
 							c.getConnection().sendPacket(outMessage);
 							break;
 						}

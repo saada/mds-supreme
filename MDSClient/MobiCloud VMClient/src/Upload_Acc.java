@@ -33,6 +33,8 @@ public class Upload_Acc extends Thread {
 	  	  		System.out.println("UPLOAD: before");
 	  	  		serverListener = new ServerSocket(serverPort);
 				sock = serverListener.accept();
+				sock.setReuseAddress(true);
+				sock.setSoTimeout(1);
 				System.out.println("UPLOAD: after");
 			} catch (IOException e1) {
 				e1.printStackTrace();

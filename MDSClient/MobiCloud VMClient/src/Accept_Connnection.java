@@ -50,13 +50,15 @@ public class Accept_Connnection extends Thread {
 			{
 				e.printStackTrace();
 				System.out.println("Unable to indentify the successful signal");
+				return;
 			}
 	    }
 	    catch (IOException e) {
 				e.printStackTrace();
+				return;
 	    }
 	    finally{
-
+	    	return;
 	    }
 	}
 }

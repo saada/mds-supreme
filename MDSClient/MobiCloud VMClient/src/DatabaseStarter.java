@@ -3,12 +3,15 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Scanner;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.apache.commons.io.FileUtils;
+import org.jivesoftware.smack.RosterEntry;
 import org.xml.sax.SAXException;
 
 
@@ -27,9 +30,13 @@ public class DatabaseStarter {
 			filePath = new GetFilePath();
 			homeDir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
 			
-			dao.deleteAll("T_UserPermit");
+			
 			//initialize entity table
-			resetDB();
+			System.out.println("Reset DB? [Y/N]");
+			Scanner scan = new Scanner(System.in);
+			String entry = scan.next();
+			if(entry.equalsIgnoreCase("y"))
+				resetDB();
 			
 		/*	END OF DATABASE INIALIZATION  */
 		} catch (Exception e) {
@@ -45,22 +52,23 @@ public class DatabaseStarter {
 	}
 	public void resetDB() throws Exception
 	{
+		dao.deleteAll("T_UserPermit");
 		filePath.visitAllDirsAndFiles(homeDir);
 		//pass recordslist to a local arraylist
-//		ArrayList<String> recordsList = new ArrayList<String>();
-//		recordsList.addAll(filePath.getRecordsList());
-//
-//		//clear and reset database
-//		dao.deleteAll(table);
-//		dao.resetAutoID(table);
-//		
-//		//insert entities to database
-//		for(int i=0; i< recordsList.size(); i++) {
-////			System.out.println("RECORD["+i+"] = "+recordsList.get(i));
-//			dao.insertEntity(recordsList.get(i));
-//		}
-//		//print on console for testing
-//		dao.writeResultSet(dao.selectAll(table));
+		ArrayList<String> recordsList = new ArrayList<String>();
+		recordsList.addAll(filePath.getRecordsList());
+
+		//clear and reset database
+		dao.deleteAll(table);
+		dao.resetAutoID(table);
+		
+		//insert entities to database
+		for(int i=0; i< recordsList.size(); i++) {
+//			System.out.println("RECORD["+i+"] = "+recordsList.get(i));
+			dao.insertEntity(recordsList.get(i));
+		}
+		//print on console for testing
+		dao.writeResultSet(dao.selectAll(table));
 	}
 	public String getLocalTreeString()
 	{
@@ -192,6 +200,26 @@ public class DatabaseStarter {
 		{
 			return false;
 		}
+	}
+	public void insertNewEntity(Collection<RosterEntry> users, String fileWithPath) throws Exception {
+		//get file info
+		File file = new File(fileWithPath);
+		String str = "file";
+		java.sql.Date d = new java.sql.Date(file.lastModified());
+		long filesize = file.length();
+        long filesizeInB = filesize;        
+        String parent = file.getParent().replace('\\', '/');
+		str += ", "+file.getName()+ ", " +  filesizeInB + "B"+", "+parent+"/, "+ d ;
+		str = str.replace("\\", "\\\\");
+		
+		//insert new file to db
+		dao.insertEntity(str);
+		
+		//initialize user permissions of entity to all users.
+		ResultSet set = dao.selectAll("T_Entity");
+		set.last();
+		int e_id = set.getInt("E_id");
+		dao.addDefaultPermissionToAllUsers(e_id, users);	
 	}
 	
 }
