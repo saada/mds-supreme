@@ -27,9 +27,6 @@ public class DatabaseStarter {
 		try {
 			//Init Database, filePath and home directory
 			dao = new MySQLAccess();
-			filePath = new GetFilePath();
-			homeDir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
-			
 			
 			//initialize entity table
 			System.out.println("Reset DB? [Y/N]");
@@ -52,6 +49,8 @@ public class DatabaseStarter {
 	}
 	public void resetDB() throws Exception
 	{
+		filePath = new GetFilePath();
+		homeDir = new File(System.getProperty("user.home")+"/Desktop/My Files/");
 		dao.deleteAll("T_UserPermit");
 		filePath.visitAllDirsAndFiles(homeDir);
 		//pass recordslist to a local arraylist

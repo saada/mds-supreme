@@ -43,7 +43,7 @@ public class MySQLAccess {
                 try {                   
                         statement = connect.createStatement();
                         // Result set get the result of the SQL query
-                        resultSet = statement.executeQuery("select * from mds_db." + table + ";");
+                        resultSet = statement.executeQuery("select distinct * from mds_db." + table + ";");
                         
                         return resultSet;
                 } catch (Exception e) {
@@ -56,7 +56,7 @@ public class MySQLAccess {
                 try {                   
                         statement = connect.createStatement();
                         // Result set get the result of the SQL query
-                        resultSet = statement.executeQuery("select E_id from mds_db.T_Entity;");
+                        resultSet = statement.executeQuery("select distinct E_id from mds_db.T_Entity;");
                         
                         return resultSet;
                 } catch (Exception e) {
@@ -130,7 +130,7 @@ public class MySQLAccess {
                                                 //System.out.println(i+":"+attr[i]+", case2");
                                                 preparedStatement.setDouble(i+1,
                                                                         Double.parseDouble(
-                                                                                attr[i].substring(0, attr[i].indexOf("KB"))));
+                                                                                attr[i].substring(0, attr[i].indexOf("B"))));
                                                 break;
                                         }
                                         case 4:
@@ -269,13 +269,13 @@ public class MySQLAccess {
                 preparedStatement.executeUpdate();
 
                 //get specific entity to check if its type is directory
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?;");
+        		preparedStatement = connect.prepareStatement("select distinct * from mds_db.T_Entity where E_id = ?;");
         		preparedStatement.setInt(1, e_id);
                 preparedStatement.executeQuery();
                 ResultSet rs = preparedStatement.getResultSet();
                 
                 //get entire entity table to find sub-entities
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity;");
+        		preparedStatement = connect.prepareStatement("select distinct * from mds_db.T_Entity;");
         		preparedStatement.executeQuery();
                 ResultSet sub_rs = preparedStatement.getResultSet();
                 
@@ -318,7 +318,7 @@ public class MySQLAccess {
         	/////////////////////check if the entity is public. If yes, we should set the entity to private before we update user permission
         	boolean isEntityPublic = true;
         	
-        	preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_UserPermit where E_id = ?;");
+        	preparedStatement = connect.prepareStatement("select distinct * from mds_db.T_UserPermit where E_id = ?;");
     		preparedStatement.setInt(1, e_id);
             preparedStatement.executeQuery();
             ResultSet allUserPermissions = preparedStatement.getResultSet();
@@ -371,13 +371,13 @@ public class MySQLAccess {
         		
 
                 //get specific entity to check if its type is directory
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity where E_id = ?;");
+        		preparedStatement = connect.prepareStatement("select distinct * from mds_db.T_Entity where E_id = ?;");
         		preparedStatement.setInt(1, e_id);
                 preparedStatement.executeQuery();
                 ResultSet rs = preparedStatement.getResultSet();
                 
                 //get entire entity table to find sub-entities
-        		preparedStatement = connect.prepareStatement("SELECT * from mds_db.T_Entity;");
+        		preparedStatement = connect.prepareStatement("select distinct * from mds_db.T_Entity;");
         		preparedStatement.executeQuery();
                 ResultSet sub_rs = preparedStatement.getResultSet();
                 
@@ -462,14 +462,14 @@ public class MySQLAccess {
         }
 
 		public ResultSet selectPermittedEntites(String jid) throws SQLException {
-			preparedStatement = connect.prepareStatement("select mds_db.T_Entity.* from ((SELECT * FROM mds_db.T_UserPermit WHERE U_id = ? and (UP_permission = 2 or UP_permission = 1)) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
+			preparedStatement = connect.prepareStatement("select distinct mds_db.T_Entity.* from ((select distinct * FROM mds_db.T_UserPermit WHERE U_id = ? and (UP_permission = 2 or UP_permission = 1)) as per join mds_db.T_Entity on per.E_id=mds_db.T_Entity.E_id);");
 			preparedStatement.setString(1,jid);
 			return preparedStatement.executeQuery();
 		}
 
 		public int getPermission(int e_id) throws SQLException {
 			int perm = 0;
-			preparedStatement = connect.prepareStatement("select UP_permission from mds_db.T_UserPermit where E_id = ?;");
+			preparedStatement = connect.prepareStatement("select distinct UP_permission from mds_db.T_UserPermit where E_id = ?;");
 			preparedStatement.setInt(1,e_id);
 			ResultSet result = preparedStatement.executeQuery();
 			while(result.next())
@@ -492,7 +492,7 @@ public class MySQLAccess {
 		}
 
 		public String getSharedBy(int e_id) throws SQLException {
-			preparedStatement = connect.prepareStatement("select U_id from mds_db.T_UserPermit where E_id = ? and UP_permission = ?;");
+			preparedStatement = connect.prepareStatement("select distinct U_id from mds_db.T_UserPermit where E_id = ? and UP_permission = ?;");
 			preparedStatement.setInt(1, e_id);
 			preparedStatement.setInt(2, 1);
 			ResultSet result = preparedStatement.executeQuery();
@@ -520,7 +520,7 @@ public class MySQLAccess {
 		}
 		//get path and name as a String array where index 0 has the path and index 1 has the entity name
 		public String[] getEntityPathAndName(int e_id) throws SQLException {
-			preparedStatement = connect.prepareStatement("select E_url, E_name from mds_db.T_Entity where E_id = ?;");
+			preparedStatement = connect.prepareStatement("select distinct E_url, E_name from mds_db.T_Entity where E_id = ?;");
 			preparedStatement.setInt(1, e_id);
 			ResultSet result = preparedStatement.executeQuery();
 			result.next();
@@ -530,7 +530,7 @@ public class MySQLAccess {
 		}
 		public void updatePaths(String prevUrl, String newUrl) throws SQLException{
 			//rename all urls
-			preparedStatement = connect.prepareStatement("SELECT E_url, E_id from mds_db.T_Entity;");
+			preparedStatement = connect.prepareStatement("select distinct E_url, E_id from mds_db.T_Entity;");
 			ResultSet set = preparedStatement.executeQuery();
 			
 			while (set.next())
@@ -550,7 +550,7 @@ public class MySQLAccess {
 		
 		public String getEntityType(int e_id) throws SQLException
 		{
-			preparedStatement = connect.prepareStatement("Select E_type from mds_db.T_Entity where E_id = ?;");
+			preparedStatement = connect.prepareStatement("select distinct E_type from mds_db.T_Entity where E_id = ?;");
 			preparedStatement.setInt(1, e_id);
 			ResultSet set = preparedStatement.executeQuery();
 			set.first();
@@ -613,7 +613,7 @@ public class MySQLAccess {
 			
 			if(type.equals("dir")) //delete sub-entities
 			{
-				preparedStatement = connect.prepareStatement("Select E_url, E_id FROM mds_db.T_Entity;");
+				preparedStatement = connect.prepareStatement("select distinct E_url, E_id FROM mds_db.T_Entity;");
 				ResultSet set = preparedStatement.executeQuery();
 				while(set.next())
 				{
