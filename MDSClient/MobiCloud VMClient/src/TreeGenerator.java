@@ -108,28 +108,12 @@ public class TreeGenerator {
 
 	
 	
-	public void generate(ResultSet set, MySQLAccess dao) throws SQLException
+	public void generate(MySQLAccess dao) throws SQLException
 	{
 		//create mutable tree nodes
 		Date today = Calendar.getInstance().getTime();
 		root = new Node(new Entity("0", "dir", "VMFILE",(long)0,System.getProperty("user.home")+"/Desktop/",today,1,""));
 		cursor = root;
-		Node node;
-		String prevUrl = "";
-		Entity entity;
-		
-		while (set.next()) {
-			String e_id = set.getString("e_id");
-			String e_type = set.getString("e_type");
-			String e_name = set.getString("e_name");
-			Long e_size = set.getLong("e_size");
-			String e_url = set.getString("e_url");
-			Date e_modate = set.getDate("e_modate");
-			
-			//store current set in an Entity data structure instance and add to tree
-			entity = new Entity(e_id, e_type, e_name, e_size, e_url, e_modate, dao.getPermission(Integer.parseInt(e_id)),dao.getSharedBy(Integer.parseInt(e_id)));
-			node = new Node(entity);
-		}
 		
 		try {
 			addNodes(dao.getAllDirsOrdered(),dao);
@@ -137,8 +121,6 @@ public class TreeGenerator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
 		printTree(root);
 	}
 	public void addNodes(ResultSet set, MySQLAccess dao) throws Exception
