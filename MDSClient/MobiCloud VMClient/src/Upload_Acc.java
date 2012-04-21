@@ -23,7 +23,7 @@ public class Upload_Acc extends Thread {
     public Upload_Acc (String p, String f) {
     	path = p;
     	file = f;
-    	serverPort = 6880;
+    	serverPort = 6879;
 	  }
 	  public void run() {
 	

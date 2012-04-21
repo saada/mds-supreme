@@ -44,7 +44,6 @@ public class MySQLAccess {
                         statement = connect.createStatement();
                         // Result set get the result of the SQL query
                         resultSet = statement.executeQuery("select distinct * from mds_db." + table + ";");
-                        
                         return resultSet;
                 } catch (Exception e) {
                         throw e;
@@ -114,8 +113,7 @@ public class MySQLAccess {
                         preparedStatement = connect
                                         .prepareStatement("insert into  mds_db.T_Entity values (default, ?, ?, ?, ?, ?)");
                         
-                        String[] attr = record.split(", ");
-                        
+                        String[] attr = record.split(", ");                  
                         for(int i=0; i<attr.length; i++) {
                                 switch(i)
                                 {
@@ -142,6 +140,15 @@ public class MySQLAccess {
                                         
                                 };
                         }
+                        ResultSet set = selectAll("T_Entity");
+                		while(set.next())
+                		{
+                			if(set.getString("E_name").equals(attr[1]) && set.getString("E_url").equals(attr[3]))
+                			{
+                				preparedStatement.clearBatch();
+                				return;
+                			}
+                		}
                         preparedStatement.executeUpdate();
                 }catch (Exception e) {
                         throw e;
@@ -634,5 +641,25 @@ public class MySQLAccess {
 			 for (RosterEntry r : users) {        	    	
          	    	insertUserPermit(e_id, r.getName(), 0);
 			 }
+		}
+
+		public ResultSet getAllDirsOrdered() {
+			try {
+				preparedStatement = connect.prepareStatement("SELECT * FROM T_Entity WHERE E_type = 'dir' order by E_url;");
+				return preparedStatement.executeQuery();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		public ResultSet getAllFiles() {
+			try {
+				preparedStatement = connect.prepareStatement("SELECT * FROM T_Entity WHERE E_type = 'file';");
+				return preparedStatement.executeQuery();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
 		}
 }

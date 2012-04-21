@@ -50,6 +50,10 @@ public class Main {
 		
 
 		while (!(input = br.readLine()).equalsIgnoreCase("q")) {
+			if(input.equals("upload"))
+			{
+				c.acceptUpload("text.txt", "/home/mobicloud/Desktop/My Files/");
+			}
 			
 		}
 		
